@@ -10,7 +10,6 @@ import MainCards from "@/components/MainCards";
 
 
 
-
 function Main() {
 
     const userData = useContext(UserContext);

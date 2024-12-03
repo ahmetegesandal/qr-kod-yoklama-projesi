@@ -5,7 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import '../styles/global.css'; // Other custom styles
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { UserProvider } from '../contexts/UserContext';
+import { UserProvider } from '@/contexts/UserContext';
 import { Public_Sans } from 'next/font/google';
 
 const publicSans = Public_Sans({

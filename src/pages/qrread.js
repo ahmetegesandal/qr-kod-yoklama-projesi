@@ -3,7 +3,7 @@ import QrScanner from 'react-qr-scanner';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import Header from "@/components/Header";
-import { UserContext } from "../contexts/UserContext";
+import { UserContext } from "@/contexts/UserContext";
 
 function QrCodeScanner() {
     const userData = useContext(UserContext);
