@@ -14,7 +14,7 @@ export default function MainCards() {
         { title: 'Akademik Takvim', icon: faCalendar, link: '/akademik-takvim' },
         { title: 'Sınav Sonuçları', icon: faFileAlt, link: '/sinav-sonuclari' },
         { title: 'Arelim Mail', icon: faEnvelope, link: '/arelim-mail' },
-        { title: 'İkazlarım', icon: faFlag, link: '/ikazlarim' },
+        { title: 'İkazlarım', icon: faFlag, link: '/ticket' },
         { title: 'ArellID Kart', icon: faIdCard, link: '/arel-id' },
         { title: 'Office 365', icon: faMicrosoft, link: '/office365' },
         { title: 'AREL Uzem Girişi', icon: faLaptop, link: '/arel-uzem' },
@@ -23,28 +23,27 @@ export default function MainCards() {
         { title: 'Çözüm Merkezi', icon: faQuestionCircle, link: '/cozum-merkezi' },
     ];
 
-
     return (
         <div className="mt-4">
             <div className="row">
                 {items.map((item, index) => (
-                    <div key={index} className="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div
+                        key={index}
+                        className="col-xl-3 col-lg-4 col-md-6 col-6 mb-lg-4 mb-md-3 mb-2"
+                    >
                         <Link href={item.link}>
-                            <div className="card card-border-shadow-warning h-100">
-                                <div className="card-body">
-
-                                    <div className="badge rounded p-2 bg-label-warning mb-2">
+                            <div className="card card-border-shadow-warning">
+                                <div className="card-body text-center">
+                                    <div className="badge rounded p-3 bg-label-warning mb-3">
                                         <FontAwesomeIcon icon={item.icon} size="xl" />
-
                                     </div>
-                                    <h5 className="card-title mb-1">{item.title}</h5>
+                                    <h6 className="card-title mb-0">{item.title}</h6>
                                 </div>
                             </div>
                         </Link>
                     </div>
                 ))}
             </div>
-
         </div>
     );
 }

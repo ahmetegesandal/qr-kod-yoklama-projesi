@@ -4,13 +4,14 @@ import { useRouter } from 'next/router';
 import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false); // Şifre görünürlüğünü kontrol etmek için
+    const [showPassword, setShowPassword] = useState(false);
+    const [recaptchaToken, setRecaptchaToken] = useState(''); // reCAPTCHA token
     const router = useRouter();
 
     useEffect(() => {
@@ -24,11 +25,11 @@ export default function Login() {
         e.preventDefault();
         setLoading(true);
 
-        if (!username || !password) {
+        if (!username || !password || !recaptchaToken) {
             Swal.fire({
                 icon: 'error',
                 title: 'Hata',
-                text: 'Kullanıcı adı ve şifre gereklidir.',
+                text: 'Kullanıcı adı, şifre ve doğrulama gereklidir.',
             });
             setLoading(false);
             return;
@@ -40,7 +41,7 @@ export default function Login() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ username, password, recaptchaToken }),
             });
 
             const data = await res.json();
@@ -106,9 +107,8 @@ export default function Login() {
                         </div>
                         <label className="form-label" for="password">Şifre:</label>
                         <div className="mb-3 input-group">
-
                             <input
-                                type={showPassword ? 'text' : 'password'} // Şifre görünürlüğüne göre tipi değiştir
+                                type={showPassword ? 'text' : 'password'}
                                 className="form-control"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -118,12 +118,16 @@ export default function Login() {
                             <span
                                 className="input-group-text"
                                 style={{cursor: 'pointer'}}
-                                onClick={() => setShowPassword(!showPassword)} // Göz simgesine tıklanıldığında şifreyi göster
+                                onClick={() => setShowPassword(!showPassword)}
                             >
                                 <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash}/>
                             </span>
                         </div>
-                        <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+                        <ReCAPTCHA
+                            sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                            onChange={(token) => setRecaptchaToken(token)}
+                        />
+                        <button type="submit" className="btn btn-primary w-100 mt-3" disabled={loading}>
                             {loading ? 'Yükleniyor...' : 'Giriş Yap'}
                         </button>
                     </form>

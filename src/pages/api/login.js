@@ -4,17 +4,35 @@ import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
     if (req.method === 'POST') {
-        const { username, password } = req.body;
+        const { username, password, recaptchaToken } = req.body;
 
-        // Girdi doğrulaması
-        if (!username || !password) {
-            return res.status(400).json({ message: 'Kullanıcı adı ve şifre gereklidir.' });
+        if (!username || !password || !recaptchaToken) {
+            return res.status(400).json({ message: 'Eksik alanlar.' });
+        }
+
+        // Google reCAPTCHA doğrulama
+        try {
+            const recaptchaRes = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `secret=6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe&response=${recaptchaToken}`,
+            });
+            const recaptchaData = await recaptchaRes.json();
+
+            if (!recaptchaData.success) {
+                return res.status(400).json({ message: 'reCAPTCHA doğrulaması başarısız.' });
+            }
+        } catch (error) {
+            console.error('reCAPTCHA Hatası:', error);
+            return res.status(500).json({ message: 'reCAPTCHA doğrulama hatası.' });
         }
 
         const connection = await getConnection();
 
         try {
-            // Kullanıcıyı veritabanından çek
+            // Kullanıcı doğrulama ve token işlemleri...
             const [rows] = await connection.execute('SELECT * FROM users WHERE username = ?', [username]);
 
             if (rows.length === 0) {
@@ -28,30 +46,17 @@ export default async function handler(req, res) {
                 return res.status(401).json({ message: 'Geçersiz şifre.' });
             }
 
-            // Admin kontrolü
-            const isAdmin = user.role === 'admin';
-
-            // JWT oluşturma
             const token = jwt.sign(
                 { userId: user.id, role: user.role },
                 process.env.JWT_SECRET,
                 { expiresIn: '1h' }
             );
 
-            // Başarılı giriş yanıtı
-            res.status(200).json({
-                message: 'Giriş başarılı!',
-                token,
-                id: user.id,
-                username: user.username,
-                role: user.role, // Rolü yanıt olarak döndürüyoruz
-                isAdmin // Admin olup olmadığını belirt
-            });
+            res.status(200).json({ message: 'Giriş başarılı!', token });
         } catch (error) {
-            console.error('Veritabanı hatası:', error); // Hata günlüğü
-            res.status(500).json({ message: 'Bir hata oluştu. Lütfen tekrar deneyin.' });
+            console.error('Veritabanı hatası:', error);
+            res.status(500).json({ message: 'Bir hata oluştu.' });
         } finally {
-            // Bağlantıyı kapat
             await connection.end();
         }
     } else {
