@@ -2,13 +2,15 @@ import { useContext, useEffect, useState } from 'react';
 import { UserContext } from "@/contexts/UserContext";
 import axios from 'axios';
 import Header from "@/components/Header";
+import withAuth from './hoc/withAuth';
 
 function RollCall() {
     const userData = useContext(UserContext);
     const userId = userData?.id;
 
-    const [courses, setCourses] = useState([]);
-    const [selectedCourse, setSelectedCourse] = useState(null);
+    const [allCourses, setAllCourses] = useState([]); // Tüm yoklama verileri
+    const [uniqueCourses, setUniqueCourses] = useState([]); // Tekilleştirilmiş ders listesi
+    const [selectedCourse, setSelectedCourse] = useState(null); // Seçilen ders
 
     useEffect(() => {
         if (userId) {
@@ -16,16 +18,19 @@ function RollCall() {
                 .get(`/api/getStudentCoursesAndAttendance?userId=${userId}`)
                 .then((response) => {
                     console.log("API Yanıtı:", response.data.enrichedData);
-                    // Gelen verileri tekilleştir
-                    const uniqueCourses = Array.from(
+
+                    const enrichedData = response.data.enrichedData;
+
+                    // Tüm yoklama verilerini sakla
+                    setAllCourses(enrichedData);
+
+                    // Ders seçim listesi için benzersiz dersleri belirle
+                    const uniqueList = Array.from(
                         new Map(
-                            response.data.enrichedData.map((course) => [
-                                `${course.ders_id}-${course.yoklama_tarihi}`,
-                                course,
-                            ])
+                            enrichedData.map((course) => [course.ders_id, course])
                         ).values()
                     );
-                    setCourses(uniqueCourses);
+                    setUniqueCourses(uniqueList);
                 })
                 .catch((error) => {
                     console.error("API Hatası:", error);
@@ -33,13 +38,15 @@ function RollCall() {
         }
     }, [userId]);
 
+    // Dropdown değişiminde çalışır
     const handleCourseChange = (event) => {
         const courseId = event.target.value;
         setSelectedCourse(courseId || null);
     };
 
+    // Seçilen derse göre filtrelenmiş yoklama kayıtları
     const filteredCourses = selectedCourse
-        ? courses.filter((course) => course.ders_id === parseInt(selectedCourse))
+        ? allCourses.filter((course) => course.ders_id === parseInt(selectedCourse))
         : [];
 
     const formatDateToTurkeyTime = (dateString) => {
@@ -67,7 +74,7 @@ function RollCall() {
                         value={selectedCourse || ""}
                     >
                         <option value="">Ders Seçin</option>
-                        {courses.map((course) => (
+                        {uniqueCourses.map((course) => (
                             <option key={course.ders_id} value={course.ders_id}>
                                 {course.ders_adı}
                             </option>
@@ -88,8 +95,8 @@ function RollCall() {
                             </thead>
                             <tbody>
                             {filteredCourses.length > 0 ? (
-                                filteredCourses.map((record) => (
-                                    <tr key={`${record.ders_id}-${record.yoklama_tarihi}`}>
+                                filteredCourses.map((record, index) => (
+                                    <tr key={`${record.ders_id}-${record.yoklama_tarihi}-${index}`}>
                                         <td>{record.ders_adı}</td>
                                         <td>{formatDateToTurkeyTime(record.yoklama_tarihi)}</td>
                                         <td>
@@ -117,4 +124,4 @@ function RollCall() {
     );
 }
 
-export default RollCall;
+export default withAuth(RollCall);

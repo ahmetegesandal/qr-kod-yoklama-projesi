@@ -1,4 +1,4 @@
-import { getConnection } from '../../lib/db';
+import { getConnection } from '@/lib/db';
 
 export default async function handler(req, res) {
     const { userId } = req.query;
@@ -17,19 +17,21 @@ export default async function handler(req, res) {
                  d.ders_adı AS ders_adı,
                  orc.tarih AS yoklama_tarihi,
                  CASE
-                     WHEN y.durum IS NOT NULL THEN 'var'
+                     WHEN MAX(y.durum) IS NOT NULL THEN 'var'
                      ELSE 'yok'
-                 END AS katılım_durumu
+                     END AS katılım_durumu
              FROM
                  student_courses AS sc
-             LEFT JOIN dersler AS d ON sc.ders_id = d.ders_id
-             LEFT JOIN opened_rollcall AS orc ON sc.ders_id = orc.ders_id
-             LEFT JOIN yoklamalar AS y
-                 ON y.ders_id = sc.ders_id
-                 AND y.user_id = ?
-                 AND y.tarih = orc.tarih
+                     LEFT JOIN dersler AS d ON sc.ders_id = d.ders_id
+                     LEFT JOIN opened_rollcall AS orc ON sc.ders_id = orc.ders_id
+                     LEFT JOIN yoklamalar AS y
+                               ON y.ders_id = sc.ders_id
+                                   AND y.user_id = ?
+                                   AND y.tarih = orc.tarih
              WHERE
                  sc.id = ?
+             GROUP BY
+                 sc.ders_id, orc.tarih
              ORDER BY
                  orc.tarih DESC`,
             [userId, userId]
