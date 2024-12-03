@@ -2531,7 +2531,7 @@ progress {
     cursor: pointer;
 }
 .form-control:focus {
-    color: #444050;
+    color: var(--bs-primary);
     background-color: transparent;
     border-color: var(--bs-primary);
     outline: 0;
@@ -2682,7 +2682,7 @@ textarea.form-control-lg {
 .form-select:focus {
     border-color: var(--bs-primary);
     outline: 0;
-    box-shadow: 0 2px 6px 0 rgba(115, 103, 240, 0.3);
+    box-shadow: 0 2px 6px 0 rgba(103, 158, 240, 0.3);
 }
 .form-select[multiple], .form-select[size]:not([size="1"]) {
     padding-right: 0.9375rem;
@@ -11227,7 +11227,7 @@ html:not([dir=rtl]) .nav-align-left .nav-tabs .nav-link:not(.active):hover {
     transition: all 0.2s ease;
 }
 .form-control:hover:not([disabled]):not([focus]) {
-    border-color: #82808b;
+    border-color: #80858b;
 }
 .input-group .form-control[type=number] {
     line-height: 1.375rem;
@@ -11282,7 +11282,7 @@ html:not([dir=rtl]) .form-control:not([readonly]):focus::placeholder {
     background-color: #fff;
 }
 .form-select:hover:not([disabled]):not([focus]) {
-    border-color: #82808b;
+    border-color: #80848b;
 }
 html:not([dir=rtl]) .form-select:disabled {
     background-image: url('data:image/svg+xml,%3csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 22" fill="none"%3e%3cpath d="M10.9999 12.0743L15.5374 7.53676L16.8336 8.83292L10.9999 14.6666L5.16626 8.83292L6.46243 7.53676L10.9999 12.0743Z" fill="%23acaab1" fill-opacity="0.9"/%3e%3c/svg%3e');
@@ -11736,7 +11736,7 @@ html:not([dir=rtl]) .form-select.form-select-sm:focus, html:not([dir=rtl]) .was-
     border-color: #82808b;
 }
 .input-group:focus-within {
-    box-shadow: 0 2px 6px 0 rgba(115, 103, 240, 0.3);
+    box-shadow: 0 2px 6px 0 rgba(103, 167, 240, 0.3);
 }
 .input-group:focus-within .form-control,
 .input-group:focus-within .input-group-text {
@@ -35063,13 +35063,13 @@ button.list-group-item-primary.active {
 .switch-input:checked ~ .switch-toggle-slider {
     background: var(--bs-primary);
     color: #fff;
-    box-shadow: 0 2px 6px 0 rgba(115, 103, 240, 0.3);
+    box-shadow: 0 2px 6px 0 rgba(103, 162, 240, 0.3);
 }
 
 .switch-primary.switch .switch-input:checked ~ .switch-toggle-slider {
     background: var(--bs-primary);
     color: #fff;
-    box-shadow: 0 2px 6px 0 rgba(115, 103, 240, 0.3);
+    box-shadow: 0 2px 6px 0 rgba(103, 162, 240, 0.3);
 }
 
 .timeline .timeline-point-primary {

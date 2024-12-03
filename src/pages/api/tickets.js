@@ -1,5 +1,4 @@
-import { getConnection } from '../../lib/db';
-import jwt from 'jsonwebtoken';
+import { getConnection } from '@/lib/db';
 
 export default async function handler(req, res) {
     const { userId, role } = req.query; // role ve userId'yi alıyoruz
