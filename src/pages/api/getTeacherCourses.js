@@ -1,14 +1,12 @@
-// getteachercourses.js
-import { getConnection } from '../../lib/db';
+import { getConnection } from '@/lib/db';
 
 export default async function handler(req, res) {
     if (req.method === 'GET') {
-        const { userId } = req.query; // user_id parametresini alıyoruz
+        const { userId } = req.query;
 
         const connection = await getConnection();
 
         try {
-            // user_id'ye göre öğretim elemanının derslerini çekme
             const query = `
                 SELECT
                     oe.ogretim_elemani_id,
@@ -17,12 +15,16 @@ export default async function handler(req, res) {
                     d.ders_kodu,
                     d.ders_adı,
                     ds.derslik_adi,
-                    qk.qr_kod_id -- QR Kod ID'yi buraya ekledik
+                    qk.qr_kod_id,
+                    sc.başlangıç_saati,
+                    sc.bitiş_saati
                 FROM
                     ogretim_elemanlari oe
                         JOIN dersler d ON oe.ogretim_elemani_id = d.ogretim_elemani_id
                         LEFT JOIN derslikler ds ON d.derslik_id = ds.derslik_id
-                        LEFT JOIN qr_kodlar qk ON ds.derslik_id = qk.derslik_id -- Derslik ile QR kodları eşleştiriyoruz
+                        LEFT JOIN qr_kodlar qk ON ds.derslik_id = qk.derslik_id
+                        LEFT JOIN student_courses sc ON d.ders_id = sc.ders_id
+
                 WHERE
                     oe.user_id = ?;
             `;
@@ -34,9 +36,10 @@ export default async function handler(req, res) {
             console.error('Veritabanı hatası:', error);
             res.status(500).json({ error: 'Dersler alınırken bir hata oluştu' });
         } finally {
-            connection.end();
+            if (connection) await connection.end();
         }
     } else {
+        res.setHeader('Allow', ['GET']);
         res.status(405).json({ message: 'Yalnızca GET isteklerine izin veriliyor' });
     }
 }

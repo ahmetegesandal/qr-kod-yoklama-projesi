@@ -1,5 +1,3 @@
-// qrsatart.js
-
 import { useContext, useState, useEffect } from 'react';
 import Header from "../components/Header";
 import withAuth from './hoc/withAuth';
@@ -9,22 +7,40 @@ import Swal from "sweetalert2";
 
 function QrStart() {
     const userData = useContext(UserContext);
+
+    if (!userData) {
+        return <p>Veriler yükleniyor...</p>;
+    }
+
+    if (userData.role !== 'admin') {
+        return <p>Bu alana erişim yetkiniz yok.</p>;
+    }
+
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const [dersler, setDersler] = useState([]);
     const [selectedDersId, setSelectedDersId] = useState('');
     const [selectedDersDetails, setSelectedDersDetails] = useState(null);
     const [durum, setDurum] = useState('acik');
-    const [qrVisible, setQrVisible] = useState(false); // QR kod okuma görünürlüğü
+    const [qrVisible, setQrVisible] = useState(false);
     const [baslangicSaati, setBaslangicSaati] = useState(new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }));
     const [bitisSaati, setBitisSaati] = useState('');
+
+
+    const currentTime = new Date();
+    const currentHours = currentTime.getHours();
+    const currentMinutes = currentTime.getMinutes();
 
     useEffect(() => {
         if (userData) {
             fetch(`/api/getTeacherCourses?userId=${userData.id}`)
                 .then((response) => response.json())
                 .then((data) => {
-                    setDersler(Array.isArray(data) ? data : []);
+                    if (Array.isArray(data)) {
+                        setDersler(data);
+                    } else {
+                        setDersler([]);
+                    }
                 })
                 .catch((error) => {
                     console.error('Dersler alınamadı:', error);
@@ -41,27 +57,47 @@ function QrStart() {
         }
     }, [selectedDersId, dersler]);
 
+
+
+    const isDersActive = (ders) => {
+        console.log('Ders:', ders); // Veriyi kontrol edin
+        if (!ders || !ders.başlangıç_saati || !ders.bitiş_saati) {
+            console.warn('Başlangıç veya bitiş saati eksik:', ders);
+            return false;
+        }
+
+        try {
+            const [baslangicSaat, baslangicDakika] = ders.başlangıç_saati.split(':').map(Number);
+            const [bitisSaat, bitisDakika] = ders.bitiş_saati.split(':').map(Number);
+
+            const now = currentHours * 60 + currentMinutes;
+            const dersBaslangic = baslangicSaat * 60 + baslangicDakika;
+            const dersBitis = bitisSaat * 60 + bitisDakika;
+
+            return now >= dersBaslangic && now <= dersBitis;
+        } catch (error) {
+            console.error('Saat ayrıştırma hatası:', error);
+            return false;
+        }
+    };
+
     const handleQrResult = (result) => {
         if (result) {
-            const scannedDerslikAdi = result.text.trim(); // QR koddan gelen veriyi derslik adı olarak kabul ediyoruz
+            const scannedDerslikAdi = result.text.trim();
             console.log("Tarama sonucu (Derslik Adı):", scannedDerslikAdi);
 
             if (selectedDersDetails) {
-                // Gelen QR kod derslik adı ile seçilen dersin derslik adı eşleşiyor mu?
                 if (scannedDerslikAdi === selectedDersDetails.derslik_adi) {
                     console.log("Derslik eşleşti, yoklama başlatılıyor...");
-                    addRollcall(selectedDersDetails.qr_kod_id); // QR Kod ID'yi gönderiyoruz
-                    setQrVisible(false); // QR kod okuyucuyu kapat
+                    addRollcall(selectedDersDetails.qr_kod_id);
+                    setQrVisible(false);
                 } else {
                     Swal.fire({
                         icon: 'error',
                         title: 'Hata',
                         text: 'QR kod yanlış veya eşleşmedi.',
-                        timer: 3000, // 1.5 saniye boyunca göster
-                        showConfirmButton: false, // "Tamam" butonunu gizle
-                    }).then(() => {
-                        // SweetAlert kapandıktan sonra istenirse sayfa yönlendirme yapılabilir
-                        window.location.reload(); // Sayfayı yeniler
+                        timer: 3000,
+                        showConfirmButton: false,
                     });
                 }
             } else {
@@ -70,21 +106,28 @@ function QrStart() {
         }
     };
 
-
     const addRollcall = async (qrKodId) => {
+        if (!selectedDersDetails) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Hata',
+                text: 'Lütfen bir ders seçin!',
+                timer: 1500,
+                showConfirmButton: false,
+            });
+            return;
+        }
+
         setLoading(true);
         setMessage('');
 
         try {
-            console.log('API çağrısı için gönderilen veri:', {
-                ders_id: selectedDersId,
-                users_id: userData ? userData.id : null,
-                tarih: new Date().toISOString().split('T')[0],
-                durum,
-                baslangic_saati: baslangicSaati,
-                bitis_saati: bitisSaati,
-                qr_kod_id: qrKodId,
-            });
+            // Ders saatlerini seçilen ders detaylarından alın
+            const formattedBaslangicSaati = `${selectedDersDetails.başlangıç_saati}:00`;
+            const formattedBitisSaati = `${selectedDersDetails.bitiş_saati}:00`;
+
+            console.log('Gönderilen Başlangıç Saati:', formattedBaslangicSaati);
+            console.log('Gönderilen Bitiş Saati:', formattedBitisSaati);
 
             const response = await fetch('/api/openedRollcall', {
                 method: 'POST',
@@ -93,40 +136,31 @@ function QrStart() {
                 },
                 body: JSON.stringify({
                     ders_id: selectedDersId,
-                    users_id: userData ? userData.id : null,
+                    users_id: userData.id,
                     tarih: new Date().toISOString().split('T')[0],
                     durum,
-                    baslangic_saati: baslangicSaati,
-                    bitis_saati: bitisSaati,
-                    qr_kod_id: qrKodId, // QR Kod ID doğrudan gönderiliyor
+                    baslangic_saati: formattedBaslangicSaati,
+                    bitis_saati: formattedBitisSaati,
+                    qr_kod_id: qrKodId,
                 }),
             });
 
             if (response.ok) {
-                const data = await response.json();
-                setMessage('Yoklama başarıyla eklendi');
                 Swal.fire({
                     icon: 'success',
                     title: 'Başarılı',
                     text: 'Yoklama başarıyla eklendi!',
-                    timer: 1500, // 1.5 saniye boyunca göster
-                    showConfirmButton: false, // "Tamam" butonunu gizle
-                }).then(() => {
-                    // SweetAlert kapandıktan sonra istenirse sayfa yönlendirme yapılabilir
-                    window.location.reload(); // Sayfayı yeniler
-                });
+                    timer: 1500,
+                    showConfirmButton: false,
+                }).then(() => window.location.reload());
             } else {
                 const errorData = await response.json();
-                setMessage(errorData.error || 'Bir hata oluştu');
                 Swal.fire({
                     icon: 'error',
                     title: 'Hata',
                     text: errorData.error || 'Bir hata oluştu',
-                    timer: 1500, // 1.5 saniye boyunca göster
-                    showConfirmButton: false, // "Tamam" butonunu gizle
-                }).then(() => {
-                    // SweetAlert kapandıktan sonra istenirse sayfa yönlendirme yapılabilir
-                    window.location.reload(); // Sayfayı yeniler
+                    timer: 1500,
+                    showConfirmButton: false,
                 });
             }
         } catch (error) {
@@ -138,115 +172,65 @@ function QrStart() {
     };
 
 
-
-    const qrScannerStyle = {
-        width: '100%',
-        height: '100%',
-    };
-
     return (
         <>
             <Header />
 
             <div className="container mt-4">
-                {userData ? (
-                    <>
-                        <div className="mb-4">
-                            <h3>Hoş Geldiniz, {userData.role}</h3>
-                        </div>
 
-                        <div className="mb-3">
-                            <label htmlFor="dersSecimi" className="form-label">Ders Seçimi:</label>
-                            <select
-                                id="dersSecimi"
-                                className="form-select"
-                                value={selectedDersId}
-                                onChange={(e) => setSelectedDersId(e.target.value)}
+
+                <div className="mb-3">
+                    <label htmlFor="dersSecimi" className="form-label">Ders Seçimi:</label>
+                    <select
+                        id="dersSecimi"
+                        className="form-select"
+                        value={selectedDersId}
+                        onChange={(e) => setSelectedDersId(e.target.value)}
+                    >
+                        <option value="">Ders Seçin</option>
+                        {dersler.map((ders) => (
+                            <option
+                                key={ders.ders_id}
+                                value={ders.ders_id}
+                                disabled={!isDersActive(ders)}
                             >
-                                <option value="">Ders Seçin</option>
-                                {dersler.map((ders) => (
-                                    <option key={ders.ders_id} value={ders.ders_id}>
-                                        {ders.ders_adı}
-                                    </option>
-                                ))}
-                            </select>
+                                {ders.ders_adı} {!isDersActive(ders) ? '(Şuan Açılamaz)' : ''}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {selectedDersDetails && (
+                    <div className="card mb-4">
+                        <div className="card-header bg-primary text-white">Seçilen Ders Bilgileri</div>
+                        <div className="card-body mt-5">
+                            <p><strong>Ders Kodu:</strong> {selectedDersDetails.ders_kodu}</p>
+                            <p><strong>Ders Adı:</strong> {selectedDersDetails.ders_adı}</p>
+                            <p><strong>Derslik:</strong> {selectedDersDetails.derslik_adi || 'Belirtilmemiş'}</p>
+                            <p><strong>Öğretim Elemanı:</strong> {selectedDersDetails.ogretim_elemanı}</p>
                         </div>
-
-                        {selectedDersDetails && (
-                            <div className="card mb-4">
-                                <div className="card-header bg-primary text-white">
-                                    Seçilen Ders Bilgileri
-                                </div>
-                                <div className="card-body p-5">
-                                    <p><strong>Ders Kodu:</strong> {selectedDersDetails.ders_kodu}</p>
-                                    <p><strong>Ders Adı:</strong> {selectedDersDetails.ders_adı}</p>
-                                    <p><strong>Derslik:</strong> {selectedDersDetails.derslik_adi || 'Belirtilmemiş'}</p>
-                                    <p><strong>Öğretim Elemanı:</strong> {selectedDersDetails.ogretim_elemanı}</p>
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="mb-3">
-                            <label htmlFor="baslangicSaati" className="form-label">Başlangıç Saati:</label>
-                            <input
-                                type="time"
-                                id="baslangicSaati"
-                                className="form-control"
-                                value={baslangicSaati}
-                                onChange={(e) => setBaslangicSaati(e.target.value)}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label htmlFor="bitisSaati" className="form-label">Bitiş Saati:</label>
-                            <input
-                                type="time"
-                                id="bitisSaati"
-                                className="form-control"
-                                value={bitisSaati}
-                                onChange={(e) => setBitisSaati(e.target.value)}
-                            />
-                        </div>
-
-                        <div className="mb-3">
-                            <label htmlFor="durum" className="form-label">Durum:</label>
-                            <select
-                                id="durum"
-                                className="form-select"
-                                value={durum}
-                                onChange={(e) => setDurum(e.target.value)}
-                            >
-                                <option value="acik">Açık</option>
-                                <option value="kapali">Kapalı</option>
-                            </select>
-                        </div>
-
-                        {/* QR Kodu Okuyucu Açma Butonu */}
-                        <button
-                            onClick={() => setQrVisible(true)}
-                            disabled={loading || !selectedDersId || !bitisSaati}
-                            className="btn btn-primary mb-3"
-                        >
-                            QR Kod ile Yoklama Başlat
-                        </button>
-
-                        {qrVisible && (
-                            <div className="qr-scanner-wrapper" style={{ width: '100%', maxWidth: '500px', margin: '0 auto' }}>
-                                <QrScanner
-                                    delay={300}
-                                    style={qrScannerStyle}
-                                    onError={(error) => console.error(error)}
-                                    onScan={(result) => {
-                                        if (result) handleQrResult(result);
-                                    }}
-                                />
-                            </div>
-                        )}
-
-                        {message && <div className="mt-3 alert alert-info">{message}</div>}
-                    </>
-                ) : (
-                    <div className="alert alert-warning">Yükleniyor...</div>
+                    </div>
                 )}
+
+                <button
+                    onClick={() => setQrVisible((prev) => !prev)} // Duruma bağlı olarak aç/kapa işlemi yapar
+                    disabled={loading || !selectedDersId || !isDersActive(selectedDersDetails)}
+                    className={`btn ${qrVisible ? 'btn-danger' : 'btn-primary'} mb-3`} // Buton rengi duruma göre değişir
+                >
+                    {qrVisible ? 'QR Kod Okuyucuyu Kapat' : 'QR Kod ile Yoklama Başlat'} {/* Duruma göre metin değişir */}
+                </button>
+
+                {qrVisible && (
+                    <div className="qr-scanner-wrapper" style={{width: '100%', maxWidth: '500px', margin: '0 auto'}}>
+                        <QrScanner
+                            delay={300}
+                            onError={(error) => console.error(error)}
+                            onScan={(result) => result && handleQrResult(result)}
+                        />
+                    </div>
+                )}
+
+                {message && <div className="mt-3 alert alert-info">{message}</div>}
             </div>
         </>
     );
