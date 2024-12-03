@@ -2,7 +2,7 @@ import {useContext, useState } from 'react';
 import Link from 'next/link';
 import Header from "../components/Header";
 import withAuth from './hoc/withAuth';
-import { UserContext } from "../contexts/UserContext";
+import { UserContext } from "@/contexts/UserContext";
 import Carousel from "../components/Carousel";
 import MainCards from "@/components/MainCards";
 
