@@ -11,18 +11,28 @@ export default async function handler(req, res) {
         const connection = await getConnection();
 
         try {
+            // Belirtilen ders için açık olan yoklama oturumlarını getir
             const [rows] = await connection.query(
-                `SELECT 1 FROM opened_rollcall 
-                 WHERE ders_id = ? 
-                   AND durum = 'acik' 
-                   AND tarih = CURDATE()
-                   AND CURTIME() BETWEEN baslangic_saati AND bitis_saati`,
+                `SELECT orc.roll_call_id, orc.baslangic_saati, orc.bitis_saati
+                 FROM opened_rollcall orc
+                 WHERE orc.ders_id = ?
+                   AND orc.durum = 'acik'
+                   AND orc.tarih = CURDATE()
+                   AND CURTIME() BETWEEN orc.baslangic_saati AND orc.bitis_saati`,
                 [dersId]
             );
 
-            res.status(200).json({
-                isRollcallStarted: rows.length > 0,
-            });
+            if (rows.length > 0) {
+                res.status(200).json({
+                    isRollcallStarted: true,
+                    activeRollcalls: rows, // Aktif oturumların detaylarını döndür
+                });
+            } else {
+                res.status(200).json({
+                    isRollcallStarted: false,
+                    message: 'Bu ders için açık bir yoklama bulunmamaktadır.',
+                });
+            }
         } catch (error) {
             console.error('Veritabanı hatası:', error);
             res.status(500).json({ error: 'Yoklama kontrolü sırasında bir hata oluştu.', details: error.message });

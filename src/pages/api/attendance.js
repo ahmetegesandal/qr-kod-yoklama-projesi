@@ -2,25 +2,25 @@ import { getConnection } from '@/lib/db';
 
 export default async function handler(req, res) {
     if (req.method === 'POST') {
-        const { qr_kod_icerik, users_id, ders_id } = req.body;
+        const { qr_kod_icerik, users_id, ders_id, baslangic_saati, bitis_saati } = req.body;
 
-        if (!qr_kod_icerik || !users_id || !ders_id) {
+        if (!qr_kod_icerik || !users_id || !ders_id || !baslangic_saati || !bitis_saati) {
             return res.status(400).json({ error: 'Eksik alanlar.' });
         }
 
         const connection = await getConnection();
 
         try {
-            // Aynı kişi, ders ve tarih için yoklama olup olmadığını kontrol et
+            // Aynı kullanıcı, ders, tarih ve oturum (başlangıç-bitiş saati) için yoklama olup olmadığını kontrol et
             const [existingRows] = await connection.query(
                 `SELECT yoklama_id
                  FROM yoklamalar
-                 WHERE user_id = ? AND ders_id = ? AND DATE(tarih) = CURDATE()`,
-                [users_id, ders_id]
+                 WHERE user_id = ? AND ders_id = ? AND DATE(tarih) = CURDATE() AND baslangic_saati = ? AND bitis_saati = ?`,
+                [users_id, ders_id, baslangic_saati, bitis_saati]
             );
 
             if (existingRows.length > 0) {
-                return res.status(409).json({ error: 'Bu ders için zaten bugün yoklama kaydedilmiş.' });
+                return res.status(409).json({ error: 'Bu oturum için zaten yoklama kaydedilmiş.' });
             }
 
             // QR kodun ve dersin geçerliliğini kontrol et
@@ -43,9 +43,9 @@ export default async function handler(req, res) {
 
             // Yoklama kaydını ekle
             const [result] = await connection.query(
-                `INSERT INTO yoklamalar (user_id, ders_id, tarih, durum)
-                 VALUES (?, ?, NOW(), 'var')`,
-                [users_id, ders_id]
+                `INSERT INTO yoklamalar (user_id, ders_id, tarih, baslangic_saati, bitis_saati, durum)
+                 VALUES (?, ?, NOW(), ?, ?, 'var')`,
+                [users_id, ders_id, baslangic_saati, bitis_saati]
             );
 
             return res.status(201).json({ message: 'Yoklama kaydı başarıyla yapıldı.', yoklama_id: result.insertId });

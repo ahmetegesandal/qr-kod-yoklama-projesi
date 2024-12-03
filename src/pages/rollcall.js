@@ -90,6 +90,8 @@ function RollCall() {
                             <tr>
                                 <th>Ders Adı</th>
                                 <th>Yoklama Tarihi</th>
+                                <th>Başlangıç Saati</th>
+                                <th>Bitiş Saati</th>
                                 <th>Katılım Durumu</th>
                             </tr>
                             </thead>
@@ -99,18 +101,20 @@ function RollCall() {
                                     <tr key={`${record.ders_id}-${record.yoklama_tarihi}-${index}`}>
                                         <td>{record.ders_adı}</td>
                                         <td>{formatDateToTurkeyTime(record.yoklama_tarihi)}</td>
+                                        <td>{record.baslangic_saati || "—"}</td>
+                                        <td>{record.bitis_saati || "—"}</td>
                                         <td>
-                                            <span
-                                                className={`badge ${record.katılım_durumu === 'var' ? 'bg-success' : 'bg-danger'}`}
-                                            >
-                                                {record.katılım_durumu === 'var' ? 'Katıldı' : 'Katılmadı'}
-                                            </span>
+                                                <span
+                                                    className={`badge ${record.katılım_durumu === 'var' ? 'bg-success' : 'bg-danger'}`}
+                                                >
+                                                    {record.katılım_durumu === 'var' ? 'Katıldı' : 'Katılmadı'}
+                                                </span>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="3" className="text-center">
+                                    <td colSpan="5" className="text-center">
                                         {selectedCourse ? 'Bu ders için kayıt bulunamadı.' : 'Lütfen bir ders seçin.'}
                                     </td>
                                 </tr>

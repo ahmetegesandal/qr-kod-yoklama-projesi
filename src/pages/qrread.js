@@ -11,7 +11,8 @@ function QrCodeScanner() {
     const [isScannerOpen, setIsScannerOpen] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [dersId, setDersId] = useState(null);
-    const [isProcessing, setIsProcessing] = useState(false); // QR kod işlenirken engelle
+    const [oturumDetails, setOturumDetails] = useState([]); // Oturum bilgilerini saklamak için
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const checkOpenedRollcall = async () => {
         if (!userData || !userData.id) {
@@ -21,8 +22,10 @@ function QrCodeScanner() {
 
         try {
             const response = await axios.get(`/api/checkActiveClass?userId=${userData.id}`);
+            console.log('API Yanıtı (checkActiveClass):', response.data); // Debugging
             if (response.data.hasClass) {
-                setDersId(response.data.classDetails.ders_id);
+                setDersId(response.data.classDetails[0].ders_id); // İlk aktif dersi seç
+                setOturumDetails(response.data.classDetails); // Tüm oturumları sakla
             } else {
                 showAlert('error', 'Hata', response.data.message, false);
             }
@@ -41,18 +44,21 @@ function QrCodeScanner() {
     const handleScan = async (result) => {
         if (result && !isProcessing) {
             setIsProcessing(true);
-            const qrKodId = result.text;
+            const scannedDerslikAdi = result.text.trim(); // QR koddan gelen derslik adı
 
-            console.log("QR Koddan Alınan Veri:", qrKodId);
+            console.log("Tarama sonucu (Derslik Adı):", scannedDerslikAdi);
 
-            if (qrKodId && dersId) {
-                const isOpened = await checkIfRollcallStarted(dersId);
-                if (isOpened) {
-                    setData(qrKodId);
-                    await recordAttendance(qrKodId);
+            if (scannedDerslikAdi && dersId) {
+                // Oturum detaylarını `derslik_adi` ile kontrol edin
+                const oturum = oturumDetails.find((oturum) => oturum.derslik_adi === scannedDerslikAdi);
+
+                if (oturum) {
+                    console.log("Eşleşen Oturum:", oturum);
+                    await recordAttendance(scannedDerslikAdi, oturum.başlangıç_saati, oturum.bitiş_saati);
+                    setData(scannedDerslikAdi);
                     setIsScannerOpen(false);
                 } else {
-                    showAlert('error', 'Hata', 'Bu ders için yoklama başlatılmamış.');
+                    showAlert('error', 'Hata', 'Geçerli bir oturum bulunamadı.');
                 }
             } else {
                 showAlert('error', 'Hata', 'Geçerli bir QR kod veya ders bulunamadı.');
@@ -71,13 +77,15 @@ function QrCodeScanner() {
         setIsScannerOpen((prev) => !prev);
     };
 
-    const recordAttendance = async (qrKodId) => {
+    const recordAttendance = async (qrKodId, baslangicSaati, bitisSaati) => {
         try {
             console.log("Yoklama Kaydı Yapılıyor. QR Kod ID:", qrKodId);
             const response = await axios.post('/api/attendance', {
                 qr_kod_icerik: qrKodId,
                 users_id: userData.id,
-                ders_id: dersId
+                ders_id: dersId,
+                baslangic_saati: baslangicSaati,
+                bitis_saati: bitisSaati,
             });
             console.log('Yoklama Kaydı Başarılı:', response.data);
             showAlert('success', 'Başarılı', 'Yoklama kaydı başarıyla yapıldı.');
@@ -102,11 +110,10 @@ function QrCodeScanner() {
             icon,
             title,
             text,
-            timer: 2000, // 2 saniye boyunca göster
+            timer: 2000,
             showConfirmButton: false,
         }).then(() => {
             if (reloadAfterAlert) {
-                // Sadece reloadAfterAlert true ise sayfayı yenile
                 window.location.reload();
             }
         });
