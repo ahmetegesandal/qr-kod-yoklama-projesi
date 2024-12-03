@@ -1,6 +1,6 @@
 // pages/api/checkActiveClass.js
 
-import { getConnection } from '../../lib/db';
+import { getConnection } from '@/lib/db';
 
 export default async function handler(req, res) {
     if (req.method === 'GET') {
