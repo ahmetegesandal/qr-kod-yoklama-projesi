@@ -4,6 +4,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import Header from "@/components/Header";
 import { UserContext } from "@/contexts/UserContext";
+import withAuth from './hoc/withAuth';
 
 function QrCodeScanner() {
     const userData = useContext(UserContext);
@@ -155,4 +156,4 @@ function QrCodeScanner() {
     );
 }
 
-export default QrCodeScanner;
+export default withAuth(QrCodeScanner);

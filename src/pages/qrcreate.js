@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Header from "@/components/Header";
 import axios from 'axios';
+import withAuth from './hoc/withAuth';
 
 const QRCodeGenerator = () => {
     const [qrKodId, setQrKodId] = useState('');
@@ -55,4 +56,4 @@ const QRCodeGenerator = () => {
     );
 };
 
-export default QRCodeGenerator;
+export default withAuth(QRCodeGenerator);

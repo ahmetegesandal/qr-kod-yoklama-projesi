@@ -145,10 +145,6 @@ function QrStart() {
             <Header />
 
             <div className="container mt-4">
-                <div className="mb-4">
-                    <h3>Hoş Geldiniz, {userData.role}</h3>
-                </div>
-
                 <div className="mb-3">
                     <label htmlFor="dersSecimi" className="form-label">Ders Seçimi:</label>
                     <select
@@ -169,19 +165,21 @@ function QrStart() {
                 {selectedDersDetails && (
                     <div className="card mb-4">
                         <div className="card-header bg-primary text-white">Seçilen Ders Bilgileri</div>
-                        <div className="card-body">
+                        <div className="card-body mt-5">
                             <p><strong>Ders Kodu:</strong> {selectedDersDetails.ders_kodu}</p>
                             <p><strong>Ders Adı:</strong> {selectedDersDetails.ders_adı}</p>
                             <p><strong>Derslik:</strong> {selectedDersDetails.derslik_adi || 'Belirtilmemiş'}</p>
                             <p><strong>Öğretim Elemanı:</strong> {selectedDersDetails.ogretim_elemanı}</p>
                             <div>
                                 <strong>Oturumlar:</strong>
-                                <ul>
+                                <ul className="list-group">
                                     {selectedDersDetails.oturumlar.map((oturum, index) => (
-                                        <li key={index}>
-                                            <label>
+                                        <li key={index}
+                                            className="list-group-item d-flex justify-content-between align-items-center">
+                                            <label className="form-check-label d-flex align-items-center">
                                                 <input
                                                     type="checkbox"
+                                                    className="form-check-input me-2"
                                                     checked={selectedOturumlar.includes(index)}
                                                     onChange={() => handleOturumSelection(index)}
                                                 />
@@ -190,6 +188,9 @@ function QrStart() {
                                         </li>
                                     ))}
                                 </ul>
+                                <div className="alert alert-info mt-3">
+                                    <small>Eğer hiçbir oturum seçmezseniz, tüm oturumlar aynı anda açılacaktır.</small>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -204,7 +205,7 @@ function QrStart() {
                 </button>
 
                 {qrVisible && (
-                    <div className="qr-scanner-wrapper" style={{ width: '100%', maxWidth: '500px', margin: '0 auto' }}>
+                    <div className="qr-scanner-wrapper" style={{width: '100%', maxWidth: '500px', margin: '0 auto'}}>
                         <QrScanner
                             delay={300}
                             onError={(error) => console.error(error)}

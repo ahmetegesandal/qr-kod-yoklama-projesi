@@ -3,6 +3,7 @@ import { UserContext } from "@/contexts/UserContext"; // UserContext'i ekliyoruz
 import { useRouter } from 'next/router';
 import Header from "@/components/Header";
 import Swal from 'sweetalert2'; // SweetAlert2'yi ekliyoruz
+import withAuth from './hoc/withAuth';
 
 function TicketAdd() {
     const { id: userId } = useContext(UserContext) || {};
@@ -86,4 +87,4 @@ function TicketAdd() {
     );
 }
 
-export default TicketAdd;
+export default withAuth(TicketAdd);
