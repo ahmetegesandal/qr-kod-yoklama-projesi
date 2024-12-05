@@ -1,4 +1,4 @@
-import { getConnection } from '../../lib/db';
+import { getConnection } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
 import path from 'path';

@@ -1,10 +1,13 @@
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Header from "@/components/Header";
 import withAuth from '../hoc/withAuth';
 import Swal from 'sweetalert2';
 import dynamic from 'next/dynamic';
 import DOMPurify from 'dompurify';
+import Link from 'next/link';
+import {UserContext} from "@/contexts/UserContext";
+
 
 const DynamicCKEditor = dynamic(() => import('@/components/CustomEditor'), {
     ssr: false, // Disable server-side rendering for CKEditor
@@ -12,6 +15,7 @@ const DynamicCKEditor = dynamic(() => import('@/components/CustomEditor'), {
 
 function TicketDetail() {
     const router = useRouter();
+    const userData = useContext(UserContext);
     const { id } = router.query;
     const [ticket, setTicket] = useState(null);
     const [messages, setMessages] = useState([]);
@@ -136,7 +140,13 @@ function TicketDetail() {
                 {ticket.status}
             </span>
                         </p>
-                        <div className="d-flex justify-content-end">
+                        <div className="d-flex column-gap-2 justify-content-end">
+                            <Link href={userData.role === 'admin' ? '/ticketadmin' : '/ticket'} passHref>
+                                <button className="btn btn-warning mb-4">
+                                    Geri Dön
+                                </button>
+                            </Link>
+
                             <button
                                 onClick={() => setShowMessageInput(!showMessageInput)}
                                 className="btn btn-primary mb-4"

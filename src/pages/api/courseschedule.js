@@ -1,6 +1,6 @@
 // pages/api/courseschedule.js
 
-import { getConnection } from '../../lib/db'; // Veritabanı bağlantınızı ayarlayın
+import { getConnection } from '@/lib/db'; // Veritabanı bağlantınızı ayarlayın
 
 export default async function handler(req, res) {
     const { id } = req.query;
