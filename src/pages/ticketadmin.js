@@ -120,9 +120,9 @@ function TicketAdmin() {
         <div>
             <Header />
             <div className="container mt-4">
-                <h4 className="mb-4">Kullanıcı Ticket Listesi</h4>
+                <h4 className="mb-4">Ticket Listesi</h4>
 
-                <div className="d-flex justify-content-between mb-3">
+                <div className="d-flex column-gap-3 justify-content-between mb-3">
                     <input
                         type="text"
                         placeholder="Arama..."

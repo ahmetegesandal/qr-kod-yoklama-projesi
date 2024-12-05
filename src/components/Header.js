@@ -3,7 +3,8 @@ import { useEffect, useState, useContext } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faBars,
-    faTimes
+    faTimes,
+    faEnvelope
 } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from "next/router";
 import Swal from 'sweetalert2';
@@ -38,7 +39,7 @@ function Header() {
     };
 
     const renderDropdownMenu = () => (
-        <ul className="dropdown-menu dropdown-menu-end dropdown-menu-lg-start" aria-labelledby="dropdownMenuButton">
+        <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
             <li>
                 <Link className="dropdown-item" href="/profil">Profil Ayarları</Link>
             </li>
@@ -53,6 +54,91 @@ function Header() {
         </ul>
     );
 
+    const renderNotificationsMenu = () => (
+
+    <div
+        className="dropdown-menu dropdown-menu-end p-3"
+        aria-labelledby="notificationDropdown"
+        style={{ width: "350px", maxHeight: "400px", overflowY: "auto" }}
+    >
+        {/* Başlık */}
+        <div className="d-flex justify-content-between align-items-center mb-3">
+            <h6 className="m-0">Notifications</h6>
+            <span className="badge bg-primary text-white">8 New</span>
+        </div>
+
+        {/* Bildirim Listesi */}
+        <div className="list-group">
+            {/* Bir Bildirim */}
+            <div className="list-group-item border-0 d-flex align-items-center mb-2">
+                <img
+                    src="https://via.placeholder.com/40"
+                    alt="User Avatar"
+                    className="rounded-circle me-3"
+                />
+                <div>
+                    <strong>Congratulation Lettie 🎉</strong>
+                    <p className="mb-0 text-muted small">
+                        Won the monthly best seller gold badge
+                    </p>
+                    <span className="text-muted small">1h ago</span>
+                </div>
+                <span className="badge bg-secondary ms-auto"></span>
+            </div>
+
+            {/* İkinci Bildirim */}
+            <div className="list-group-item border-0 d-flex align-items-center mb-2">
+                <div className="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center me-3" style={{ width: "40px", height: "40px" }}>
+                    CF
+                </div>
+                <div>
+                    <strong>Charles Franklin</strong>
+                    <p className="mb-0 text-muted small">Accepted your connection</p>
+                    <span className="text-muted small">12hr ago</span>
+                </div>
+                <span className="badge bg-secondary ms-auto"></span>
+            </div>
+
+            {/* Üçüncü Bildirim */}
+            <div className="list-group-item border-0 d-flex align-items-center mb-2">
+                <img
+                    src="https://via.placeholder.com/40"
+                    alt="User Avatar"
+                    className="rounded-circle me-3"
+                />
+                <div>
+                    <strong>New Message ✉️</strong>
+                    <p className="mb-0 text-muted small">
+                        You have a new message from Natalie
+                    </p>
+                    <span className="text-muted small">1h ago</span>
+                </div>
+                <span className="badge bg-secondary ms-auto"></span>
+            </div>
+
+            {/* Dördüncü Bildirim */}
+            <div className="list-group-item border-0 d-flex align-items-center mb-2">
+                <div className="rounded-circle bg-success text-white d-flex justify-content-center align-items-center me-3" style={{ width: "40px", height: "40px" }}>
+                    <i className="bi bi-bag"></i>
+                </div>
+                <div>
+                    <strong>Whoo! You have new order 🛒</strong>
+                    <p className="mb-0 text-muted small">
+                        ACME Inc. made new order $1,154
+                    </p>
+                    <span className="text-muted small">1 day ago</span>
+                </div>
+                <span className="badge bg-secondary ms-auto"></span>
+            </div>
+        </div>
+
+        {/* Tüm Bildirimleri Gör */}
+        <div className="text-center mt-3">
+            <button className="btn btn-primary btn-sm">View all notifications</button>
+        </div>
+    </div>
+    );
+
     return (
         <nav className="navbar navbar-expand-lg landing-navbar bg-primary shadow-sm">
             <div className="container">
@@ -64,12 +150,12 @@ function Header() {
                     aria-expanded={isOpen}
                     aria-label="Toggle navigation"
                 >
-                    <FontAwesomeIcon icon={isOpen ? faTimes : faBars} size="2xl" />
+                    <FontAwesomeIcon icon={isOpen ? faTimes : faBars} size="2xl"/>
                 </button>
                 <Link href="/main" className="navbar-brand d-flex align-items-center">
-                    <img src="/images/logo.png" alt="Logo" style={{ height: '40px' }} className="me-2" />
-                    <h2 style={{ color: 'var(--bs-primary)', margin: '0', fontWeight: '700' }}>
-                        AREL<span style={{ color: '#ab8e58' }}>im</span>
+                    <img src="/images/logo.png" alt="Logo" style={{height: '40px'}} className="me-2"/>
+                    <h2 style={{color: 'var(--bs-primary)', margin: '0', fontWeight: '700'}}>
+                        AREL<span style={{color: '#ab8e58'}}>im</span>
                     </h2>
                 </Link>
 
@@ -95,7 +181,7 @@ function Header() {
                 </div>
 
                 <div className={`collapse navbar-collapse ${isOpen ? 'show' : ''}`} id="navbarNav">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul className="navbar-nav flex-wrap me-auto mb-2 mb-lg-0">
                         {[
                             { href: '/main', label: 'Ana Sayfa', color: '#F4A261' },
 
@@ -155,7 +241,20 @@ function Header() {
                     </ul>
 
                     <div className="d-flex align-items-center d-none d-lg-block">
-                        <div className="dropdown">
+                        <div className="dropdown d-flex">
+                            { /*  bildirim butonu kısmı */}
+                            <button
+                                className="btn d-flex align-items-center dropdown-toggle"
+                                type="button"
+                                id="notificationsMenu"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+
+                            >
+                                <FontAwesomeIcon icon={isOpen ? faEnvelope : faEnvelope} size="lg" />
+                            </button>
+                            {renderNotificationsMenu()}
+                            { /* profil kısmı */}
                             <button
                                 className="btn d-flex align-items-center dropdown-toggle"
                                 type="button"
@@ -167,9 +266,9 @@ function Header() {
                                     src={userData && userData.photo ? `/images/uploads/profile_pictures/${userData.photo}` : '/images/default-profile.png'}
                                     alt="Profile"
                                     className="rounded me-2"
-                                    style={{ height: '30px', width: '30px' }}
+                                    style={{height: '30px', width: '30px'}}
                                 />
-                                <div style={{ lineHeight: '1rem' }}>
+                                <div style={{lineHeight: '1rem'}}>
                                     <p className="mb-0">{userData ? `${userData.name} ${userData.surname}` : 'Kullanıcı Adı'}</p>
                                     <small>{userData ? `${userData.bolum_adi}` : 'Yükleniyor...'}</small>
                                 </div>
@@ -177,6 +276,8 @@ function Header() {
                             {renderDropdownMenu()}
                         </div>
                     </div>
+
+
                 </div>
             </div>
         </nav>
