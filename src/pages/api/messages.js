@@ -48,6 +48,17 @@ export default async function handler(req, res) {
 
             console.log(`Message inserted for Ticket ID: ${ticketId}, Message ID: ${result.insertId}`); // Mesaj ID logla
 
+            // Ticket bilgilerini al
+            const [ticket] = await connection.query(
+                'SELECT id, userId, subject FROM tickets WHERE id = ?',
+                [ticketId]
+            );
+
+            if (!ticket || ticket.length === 0) {
+                console.error(`Ticket not found for ID: ${ticketId}`);
+                return res.status(404).json({ message: 'Ticket not found' });
+            }
+
             // Ticket durumunu role'e göre güncelle
             const newStatus = user[0].role === 'admin' ? 'Cevaplandı' : 'Yanıt Bekliyor';
             console.log(`Updating Ticket ID: ${ticketId} to Status: ${newStatus}`); // Güncellenecek durumu logla
@@ -63,6 +74,48 @@ export default async function handler(req, res) {
             }
 
             console.log(`Ticket ID: ${ticketId} successfully updated to Status: ${newStatus}`); // Güncelleme başarı logu
+
+            // Bildirimi yalnızca karşı tarafa gönder
+            const notificationTitle = `Yeni Mesaj: ${ticket[0].subject}`;
+            const notificationMessage = `${message.substring(0, 50)}...`; // Mesajı kısalt
+            const notificationLink = `/ticket/${ticketId}`;
+
+            let notificationUserId;
+
+            if (user[0].role === 'admin') {
+                // Eğer mesajı admin gönderiyorsa, ticket sahibi kullanıcıya bildir
+                notificationUserId = ticket[0].userId;
+            } else {
+                // Eğer mesajı kullanıcı gönderiyorsa, adminlere bildir
+                const [admins] = await connection.query('SELECT id FROM users WHERE role = "admin"');
+                for (const admin of admins) {
+                    await connection.query(
+                        `
+                        INSERT INTO notifications (userId, title, message, link, is_read, created_at)
+                        VALUES (?, ?, ?, ?, false, NOW())
+                        `,
+                        [admin.id, notificationTitle, notificationMessage, notificationLink]
+                    );
+                }
+            }
+
+            // Eğer bildirim yalnızca bir kullanıcıya gidiyorsa
+            if (notificationUserId) {
+                await connection.query(
+                    `
+                    INSERT INTO notifications (userId, title, message, link, is_read, created_at)
+                    VALUES (?, ?, ?, ?, false, NOW())
+                    `,
+                    [notificationUserId, notificationTitle, notificationMessage, notificationLink]
+                );
+            }
+
+            console.log('Notification created:', {
+                userId: notificationUserId || 'Adminlere gönderildi',
+                title: notificationTitle,
+                message: notificationMessage,
+                link: notificationLink,
+            });
 
             // Mesaj ve güncel durumu döndür
             const insertedMessage = {
@@ -85,5 +138,8 @@ export default async function handler(req, res) {
                 connection.end();
             }
         }
+    } else {
+        res.setHeader('Allow', ['POST']);
+        res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 }

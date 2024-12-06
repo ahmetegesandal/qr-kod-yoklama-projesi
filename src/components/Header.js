@@ -8,6 +8,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from "next/router";
 import Swal from 'sweetalert2';
+import DOMPurify from "dompurify";
 
 import { UserContext } from "@/contexts/UserContext";
 
@@ -15,6 +16,7 @@ function Header() {
     const userData = useContext(UserContext);
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
+    const [notifications, setNotifications] = useState([]);
 
     const toggleNavbar = () => {
         setIsOpen(prevState => !prevState);
@@ -44,100 +46,121 @@ function Header() {
                 <Link className="dropdown-item" href="/profil">Profil Ayarları</Link>
             </li>
             <li>
-                <a className="dropdown-item" onClick={handleLogout} style={{ cursor: 'pointer' }}>
-                    Çıkış Yap
-                </a>
+                <Link className="dropdown-item" href="/notifications">Bildirimler</Link>
             </li>
             <li>
-                <Link className="dropdown-item" href="/destek">Destek</Link>
+                <Link className="dropdown-item" href="/tercihler">Tercihler</Link>
+            </li>
+            <li>
+                <a className="dropdown-item" onClick={handleLogout} style={{cursor: 'pointer'}}>
+                    Çıkış Yap
+                </a>
             </li>
         </ul>
     );
 
-    const renderNotificationsMenu = () => (
+    useEffect(() => {
+        if (userData?.id) {
+            const fetchNotifications = async () => {
+                try {
+                    const response = await fetch(`/api/notifications?userId=${userData.id}`);
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch notifications');
+                    }
+                    const data = await response.json();
+                    console.log('Fetched Notifications:', data); // Bildirimleri kontrol edin
+                    setNotifications(data);
+                } catch (error) {
+                    console.error('Error fetching notifications:', error.message);
+                }
+            };
 
-    <div
-        className="dropdown-menu dropdown-menu-end p-3"
-        aria-labelledby="notificationDropdown"
-        style={{ width: "350px", maxHeight: "400px", overflowY: "auto" }}
-    >
-        {/* Başlık */}
-        <div className="d-flex justify-content-between align-items-center mb-3">
-            <h6 className="m-0">Notifications</h6>
-            <span className="badge bg-primary text-white">8 New</span>
-        </div>
+            fetchNotifications();
+        }
+    }, [userData?.id]);
 
-        {/* Bildirim Listesi */}
-        <div className="list-group">
-            {/* Bir Bildirim */}
-            <div className="list-group-item border-0 d-flex align-items-center mb-2">
-                <img
-                    src="https://via.placeholder.com/40"
-                    alt="User Avatar"
-                    className="rounded-circle me-3"
-                />
-                <div>
-                    <strong>Congratulation Lettie 🎉</strong>
-                    <p className="mb-0 text-muted small">
-                        Won the monthly best seller gold badge
-                    </p>
-                    <span className="text-muted small">1h ago</span>
+    const markAsRead = async (id) => {
+        try {
+            const response = await fetch(`/api/notifications/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+            });
+
+            if (response.ok) {
+                // State'teki bildirimi okundu olarak işaretle
+                setNotifications(prevNotifications =>
+                    prevNotifications.map(notification =>
+                        notification.id === id ? { ...notification, is_read: true } : notification
+                    )
+                );
+            } else {
+                console.error('Failed to mark notification as read');
+            }
+        } catch (error) {
+            console.error('Error marking notification as read:', error.message);
+        }
+    };
+    const truncateText = (html, maxLength) => {
+        // HTML içeriğini temizle ve düz metne çevir
+        const cleanText = DOMPurify.sanitize(html, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+        // Düz metni kısalt
+        if (cleanText.length > maxLength) {
+            return cleanText.slice(0, maxLength) + "...";
+        }
+        return cleanText;
+    };
+
+    const renderNotificationsMenu = () => {
+        return (
+            <div
+                className="dropdown-menu dropdown-menu-end p-3"
+                aria-labelledby="notificationDropdown"
+                style={{ width: "350px", maxHeight: "400px", overflowY: "auto" }}
+            >
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h6 className="m-0">Bildirimler</h6>
                 </div>
-                <span className="badge bg-secondary ms-auto"></span>
+
+                <div className="list-group">
+                    {notifications.slice(0, 3).map((notification) => (
+                        <div
+                            key={notification.id}
+                            className={`list-group-item border-0 d-flex align-items-center mb-2 ${
+                                notification.is_read ? 'bg-light' : 'bg-white'
+                            }`}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => markAsRead(notification.id)}
+                        >
+                            <div
+                                className="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center me-3"
+                                style={{ width: "40px", height: "40px" }}
+                            >
+                                S
+                            </div>
+                            <div>
+                                <strong>{notification.title}</strong>
+                                {notification.link && (
+                                    <p className="mb-0 text-muted small">
+                                        {truncateText(notification.message, 35)}
+                                    </p>
+                                )}
+                                <span className="text-muted small">
+                                {new Date(notification.created_at).toLocaleString()}
+                            </span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="text-center mt-3">
+                    <Link href="/notifications" passHref>
+                        <button className="btn btn-primary btn-sm">Tüm Bildirimleri Gör</button>
+                    </Link>
+                </div>
             </div>
+        );
+    };
 
-            {/* İkinci Bildirim */}
-            <div className="list-group-item border-0 d-flex align-items-center mb-2">
-                <div className="rounded-circle bg-secondary text-white d-flex justify-content-center align-items-center me-3" style={{ width: "40px", height: "40px" }}>
-                    CF
-                </div>
-                <div>
-                    <strong>Charles Franklin</strong>
-                    <p className="mb-0 text-muted small">Accepted your connection</p>
-                    <span className="text-muted small">12hr ago</span>
-                </div>
-                <span className="badge bg-secondary ms-auto"></span>
-            </div>
-
-            {/* Üçüncü Bildirim */}
-            <div className="list-group-item border-0 d-flex align-items-center mb-2">
-                <img
-                    src="https://via.placeholder.com/40"
-                    alt="User Avatar"
-                    className="rounded-circle me-3"
-                />
-                <div>
-                    <strong>New Message ✉️</strong>
-                    <p className="mb-0 text-muted small">
-                        You have a new message from Natalie
-                    </p>
-                    <span className="text-muted small">1h ago</span>
-                </div>
-                <span className="badge bg-secondary ms-auto"></span>
-            </div>
-
-            {/* Dördüncü Bildirim */}
-            <div className="list-group-item border-0 d-flex align-items-center mb-2">
-                <div className="rounded-circle bg-success text-white d-flex justify-content-center align-items-center me-3" style={{ width: "40px", height: "40px" }}>
-                    <i className="bi bi-bag"></i>
-                </div>
-                <div>
-                    <strong>Whoo! You have new order 🛒</strong>
-                    <p className="mb-0 text-muted small">
-                        ACME Inc. made new order $1,154
-                    </p>
-                    <span className="text-muted small">1 day ago</span>
-                </div>
-                <span className="badge bg-secondary ms-auto"></span>
-            </div>
-        </div>
-
-        {/* Tüm Bildirimleri Gör */}
-        <div className="text-center mt-3">
-            <button className="btn btn-primary btn-sm">View all notifications</button>
-        </div>
-    </div>
-    );
 
     return (
         <nav className="navbar navbar-expand-lg landing-navbar bg-primary shadow-sm">
@@ -244,14 +267,27 @@ function Header() {
                         <div className="dropdown d-flex">
                             { /*  bildirim butonu kısmı */}
                             <button
-                                className="btn d-flex align-items-center dropdown-toggle"
+                                className="btn d-flex align-items-center dropdown-toggle position-relative"
                                 type="button"
                                 id="notificationsMenu"
                                 data-bs-toggle="dropdown"
                                 aria-expanded="false"
-
                             >
-                                <FontAwesomeIcon icon={isOpen ? faEnvelope : faEnvelope} size="lg" />
+                                <div className="position-relative">
+                                    <FontAwesomeIcon icon={faEnvelope} size="xl"/>
+                                    {notifications.filter(n => !n.is_read).length > 0 && (
+                                        <span
+                                            className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                            style={{
+                                                fontSize: '0.7rem',
+                                                padding: '4px',
+                                                transform: 'translate(-50%, -50%)'
+                                            }}
+                                        >
+                    {notifications.filter(n => !n.is_read).length}
+                </span>
+                                    )}
+                                </div>
                             </button>
                             {renderNotificationsMenu()}
                             { /* profil kısmı */}

@@ -7,6 +7,10 @@ import { faEye, faTrash } from '@fortawesome/free-solid-svg-icons';
 import withAuth from './hoc/withAuth';
 import Swal from "sweetalert2";
 
+function truncateText(text, maxLength) {
+    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+}
+
 function TicketAdmin() {
     const userData = useContext(UserContext);
 
@@ -144,6 +148,7 @@ function TicketAdmin() {
                     <table className="table table-striped table-bordered">
                         <thead>
                         <tr>
+                            <th>Kategori</th> {/* Yeni kategori sütunu */}
                             <th>Konu</th>
                             <th>Açıklama</th>
                             <th>Durum</th>
@@ -154,8 +159,9 @@ function TicketAdmin() {
                         <tbody>
                         {currentData.map((ticket) => (
                             <tr key={ticket.id}>
-                                <td>{ticket.subject}</td>
-                                <td>{ticket.description}</td>
+                                <td>{ticket.categoryName || 'Belirtilmemiş'}</td>
+                                <td>{truncateText((ticket.subject), 15)}</td>
+                                <td>{truncateText((ticket.description), 35)}</td>
                                 <td>
                                         <span
                                             className={`badge ${

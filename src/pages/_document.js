@@ -20,7 +20,7 @@ class MyDocument extends Document {
 
                     {/* Favicon */}
                     <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
-                    <title>ARELim</title>
+
                 </Head>
                 <body>
                 <Main />

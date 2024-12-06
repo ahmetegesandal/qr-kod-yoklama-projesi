@@ -1,3 +1,4 @@
+// pages/ticket/[id].js
 import { useRouter } from 'next/router';
 import React, {useContext, useEffect, useState} from 'react';
 import Header from "@/components/Header";
@@ -132,14 +133,17 @@ function TicketDetail() {
                     <div className="card-body">
                         <p><strong>Konu:</strong> {ticket.subject}</p>
                         <p><strong>Açıklama:</strong> {ticket.description}</p>
+                        <p><strong>Kategori:</strong> {ticket.categoryName || 'Belirtilmemiş'}</p> {/* Kategori bilgisi */}
+
                         <p>
                             <strong>Durum:</strong>{" "}
                             <span
                                 className={`badge ${ticket.status === 'Yanıt Bekliyor' ? 'bg-warning' : 'bg-success'}`}
                             >
-                {ticket.status}
-            </span>
+                                {ticket.status}
+                            </span>
                         </p>
+
                         <div className="d-flex column-gap-2 justify-content-end">
                             <Link href={userData.role === 'admin' ? '/ticketadmin' : '/ticket'} passHref>
                                 <button className="btn btn-warning mb-4">

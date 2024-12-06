@@ -1,3 +1,4 @@
+// api/tickets.js
 import { getConnection } from '@/lib/db';
 
 export default async function handler(req, res) {
@@ -10,10 +11,19 @@ export default async function handler(req, res) {
             let tickets;
             if (role === 'admin') {
                 // Eğer kullanıcı adminse tüm ticketları getir
-                [tickets] = await connection.query('SELECT * FROM tickets');
+                [tickets] = await connection.query(`
+                SELECT tickets.*, categories.name AS categoryName
+                FROM tickets
+                LEFT JOIN categories ON tickets.categoryId = categories.id
+            `);
             } else {
                 // Kullanıcıya ait ticketları al
-                [tickets] = await connection.query('SELECT * FROM tickets WHERE userId = ?', [userId]);
+                [tickets] = await connection.query(`
+                SELECT tickets.*, categories.name AS categoryName
+                FROM tickets
+                LEFT JOIN categories ON tickets.categoryId = categories.id
+                WHERE tickets.userId = ?
+            `, [userId]);
             }
             res.status(200).json(tickets); // Ticketları döndür
         } catch (error) {
@@ -23,7 +33,7 @@ export default async function handler(req, res) {
             await connection.end(); // Bağlantıyı kapat
         }
     } else if (req.method === 'POST') {
-        const { subject, description } = req.body; // Ticket verileri
+        const { subject, description, categoryId  } = req.body; // Ticket verileri
 
         if (!userId || !subject || !description) {
             return res.status(400).json({ message: 'Geçersiz giriş' });
@@ -32,11 +42,12 @@ export default async function handler(req, res) {
         try {
             // Yeni ticket ekle
             const result = await connection.query(
-                'INSERT INTO tickets (userId, subject, description, created_at) VALUES (?, ?, ?, ?)',
+                'INSERT INTO tickets (userId, subject, description, categoryId, created_at) VALUES (?, ?, ?, ?, ?)',
                 [
                     userId,
                     subject,
                     description,
+                    categoryId,
                     new Date(),
                 ]
             );

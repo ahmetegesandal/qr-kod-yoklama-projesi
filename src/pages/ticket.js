@@ -1,3 +1,4 @@
+// pages/ticket.js
 import React, { useState, useEffect, useContext } from 'react';
 import Link from 'next/link';
 import Header from "@/components/Header";
@@ -5,6 +6,11 @@ import { UserContext } from "@/contexts/UserContext";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
 import withAuth from './hoc/withAuth';
+
+
+function truncateText(text, maxLength) {
+    return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+}
 
 function Ticket() {
     const [tickets, setTickets] = useState([]);
@@ -79,6 +85,7 @@ function Ticket() {
                     <table className="table table-striped table-bordered">
                         <thead>
                         <tr>
+                            <th>Kategori</th> {/* Yeni kategori sütunu */}
                             <th>Konu</th>
                             <th>Açıklama</th>
                             <th>Durum</th> {/* Yeni durum sütunu */}
@@ -89,17 +96,19 @@ function Ticket() {
                         <tbody>
                         {currentData.map((ticket) => (
                             <tr key={ticket.id}>
-                                <td>{ticket.subject}</td>
-                                <td>{ticket.description}</td>
+                                <td>{ticket.categoryName || 'Belirtilmemiş'}</td>
+                                {/* Yeni kategori sütunu */}
+                                <td>{truncateText((ticket.subject), 15)}</td>
+                                <td>{truncateText((ticket.description), 35)}</td>
                                 <td>
-                                        <span className={`badge ${ticket.status === 'Yanıt Bekliyor' ? 'bg-warning' : 'bg-success'}`}>
-                                            {ticket.status}
-                                        </span>
+                                <span className={`badge ${ticket.status === 'Yanıt Bekliyor' ? 'bg-warning' : 'bg-success'}`}>
+                                    {ticket.status}
+                                </span>
                                 </td>
                                 <td>{new Date(ticket.created_at).toLocaleString()}</td>
                                 <td className="text-center">
-                                    <Link href={`/ticket/${ticket.id}`} className="btn btn-primary" >
-                                        <FontAwesomeIcon icon={faEye} style={{ color: 'white' }} />
+                                    <Link href={`/ticket/${ticket.id}`} className="btn btn-primary">
+                                        <FontAwesomeIcon icon={faEye} style={{color: 'white'}}/>
                                     </Link>
                                 </td>
                             </tr>
@@ -123,7 +132,7 @@ function Ticket() {
                             <span className="page-link">{currentPage} / {totalPages}</span>
                         </li>
                         <li className="page-item">
-                            <button
+                        <button
                                 className="page-link"
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}

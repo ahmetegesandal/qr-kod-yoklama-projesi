@@ -2531,7 +2531,7 @@ progress {
     cursor: pointer;
 }
 .form-control:focus {
-    color: var(--bs-primary);
+    color: #000;
     background-color: transparent;
     border-color: var(--bs-primary);
     outline: 0;

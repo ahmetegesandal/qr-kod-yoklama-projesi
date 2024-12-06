@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { UserContext } from "@/contexts/UserContext"; // UserContext'i ekliyoruz
 import { useRouter } from 'next/router';
 import Header from "@/components/Header";
@@ -9,12 +9,37 @@ function TicketAdd() {
     const { id: userId } = useContext(UserContext) || {};
     const [subject, setSubject] = useState('');
     const [description, setDescription] = useState('');
+    const [categories, setCategories] = useState([]); // Kategorileri saklamak için state
+    const [categoryId, setCategoryId] = useState(''); // Seçili kategori
     const router = useRouter();
+
+    // Kategorileri API'den çekiyoruz
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('/api/categories');
+                if (!response.ok) {
+                    throw new Error("Failed to fetch categories");
+                }
+                const data = await response.json();
+                setCategories(data);
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hata',
+                    text: "Kategoriler yüklenemedi.",
+                });
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleNewTicketSubmit = async (e) => {
         e.preventDefault();
 
-        if (!userId || !subject || !description) {
+        if (!userId || !subject || !description || !categoryId) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Uyarı',
@@ -29,7 +54,7 @@ function TicketAdd() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ subject, description }),
+                body: JSON.stringify({ subject, description, categoryId }), // categoryId'yi ekledik
             });
 
             if (!response.ok) {
@@ -79,6 +104,23 @@ function TicketAdd() {
                             onChange={(e) => setDescription(e.target.value)}
                             required
                         />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="category" className="form-label">Kategori</label>
+                        <select
+                            id="category"
+                            className="form-control"
+                            value={categoryId}
+                            onChange={(e) => setCategoryId(e.target.value)}
+                            required
+                        >
+                            <option value="">Kategori Seçin</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                     <button type="submit" className="btn btn-primary">Ticket Oluştur</button>
                 </form>

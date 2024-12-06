@@ -33,10 +33,20 @@ export default async function handler(req, res) {
             let ticket;
             if (role === 'admin') {
                 // Eğer kullanıcı adminse tüm ticketı al
-                [ticket] = await connection.query('SELECT * FROM tickets WHERE id = ?', [id]);
+                [ticket] = await connection.query(`
+                SELECT tickets.*, categories.name AS categoryName
+                FROM tickets
+                LEFT JOIN categories ON tickets.categoryId = categories.id
+                WHERE tickets.id = ?
+            `, [id]);
             } else {
                 // Kullanıcıya ait ticket'ı al
-                [ticket] = await connection.query('SELECT * FROM tickets WHERE id = ? AND userId = ?', [id, userId]);
+                [ticket] = await connection.query(`
+                SELECT tickets.*, categories.name AS categoryName
+                FROM tickets
+                LEFT JOIN categories ON tickets.categoryId = categories.id
+                WHERE tickets.id = ? AND tickets.userId = ?
+            `, [id, userId]);
             }
 
             // Messages sorgusunu güncelle
