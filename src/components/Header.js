@@ -49,7 +49,7 @@ function Header() {
                 <Link className="dropdown-item" href="/notifications">Bildirimler</Link>
             </li>
             <li>
-                <Link className="dropdown-item" href="/tercihler">Tercihler</Link>
+                <Link className="dropdown-item" href="/preferences">Tercihler</Link>
             </li>
             <li>
                 <a className="dropdown-item" onClick={handleLogout} style={{cursor: 'pointer'}}>
