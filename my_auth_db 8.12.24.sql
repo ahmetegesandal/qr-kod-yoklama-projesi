@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: 127.0.0.1
--- Üretim Zamanı: 03 Ara 2024, 14:48:01
+-- Üretim Zamanı: 07 Ara 2024, 22:13:44
 -- Sunucu sürümü: 10.4.28-MariaDB
 -- PHP Sürümü: 8.0.28
 
@@ -60,6 +60,35 @@ CREATE TABLE `campus` (
 INSERT INTO `campus` (`campus_id`, `campus_adi`, `adres`, `campus_kodu`) VALUES
 (1, 'Tepekent', 'Merkez Mahallesi, Kampüs Sokak No:1', 'TY'),
 (2, 'Cevizlibağ', 'Batı Mahallesi, Eğitim Cad. No:2', 'CY');
+
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `categories`
+--
+
+CREATE TABLE `categories` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Tablo döküm verisi `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`, `created_at`) VALUES
+(1, 'Kayıt İşlemleri', '2024-12-06 21:15:41'),
+(2, 'Ders Programı', '2024-12-06 21:15:41'),
+(3, 'Not İşlemleri', '2024-12-06 21:15:41'),
+(4, 'Transkript Talebi', '2024-12-06 21:15:41'),
+(5, 'Mezuniyet İşlemleri', '2024-12-06 21:15:41'),
+(6, 'Harç Ödeme Sorunları', '2024-12-06 21:15:41'),
+(7, 'Yatay/Dikey Geçiş', '2024-12-06 21:15:41'),
+(8, 'Danışmanlık Hizmetleri', '2024-12-06 21:15:41'),
+(9, 'Kütüphane Kullanımı', '2024-12-06 21:15:41'),
+(10, 'Sistem Teknik Desteği', '2024-12-06 21:15:41'),
+(11, 'Diğer', '2024-12-06 21:27:56');
 
 -- --------------------------------------------------------
 
@@ -133,18 +162,38 @@ CREATE TABLE `messages` (
 --
 
 INSERT INTO `messages` (`id`, `ticketId`, `userId`, `content`, `created_at`) VALUES
-(90, 22, '2', '<p>123</p>', '2024-11-16 14:50:05'),
-(91, 22, '4', '<p>mailden dönülmüştür</p>', '2024-11-16 16:38:52'),
-(92, 22, '2', '<p>bana yardım lazım hocam ya</p>', '2024-11-16 17:25:52'),
-(93, 22, '4', '<p>ederiz canım</p>', '2024-11-16 17:26:11'),
-(94, 22, '2', '<p>hocam yardımmm</p>', '2024-11-16 17:37:08'),
-(95, 22, '2', '<ul><li><i><strong>dasdasd</strong></i></li><li><i><strong>dsadsada</strong></i></li><li><i><strong>dsadsa</strong></i></li><li><i><strong>d</strong></i></li><li><i><strong>as</strong></i></li><li><i><strong>dasdas</strong></i></li></ul>', '2024-11-16 17:41:11'),
-(96, 22, '2', '<p>ddd</p>', '2024-11-16 17:43:29'),
-(97, 22, '4', '<p>sorun çözülmüştür iyi günler dileriz</p>', '2024-11-16 17:44:05'),
-(98, 24, '2', '<p>dd</p>', '2024-11-16 18:08:36'),
-(99, 24, '4', '<p>merhaba</p>', '2024-11-16 19:00:45'),
-(100, 23, '2', '<p>dsjandusauıduıasıodas</p>', '2024-11-19 21:17:10'),
-(101, 23, '4', '<p>egecim problemi çözcem</p>', '2024-11-19 21:17:40');
+(124, 29, '2', '<p>merhaba bir problem varda</p>', '2024-12-08 00:01:50');
+
+-- --------------------------------------------------------
+
+--
+-- Tablo için tablo yapısı `notifications`
+--
+
+CREATE TABLE `notifications` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `message` varchar(255) NOT NULL,
+  `link` varchar(255) DEFAULT NULL,
+  `is_read` tinyint(1) DEFAULT 0,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Tablo döküm verisi `notifications`
+--
+
+INSERT INTO `notifications` (`id`, `title`, `userId`, `message`, `link`, `is_read`, `created_at`) VALUES
+(14, 'Yeni Mesaj: deneme hakkında', 2, '<p>atma artık buradan bilet</p>...', '/ticket/29', 0, '2024-12-07 23:47:34'),
+(15, 'Yeni Mesaj: deneme hakkında', 2, '<p>atmaa</p>...', '/ticket/29', 0, '2024-12-07 23:48:07'),
+(16, 'Yeni Mesaj: deneme hakkında', 4, '<p>kes sikerim belanı</p>...', '/ticket/29', 0, '2024-12-07 23:53:58'),
+(17, 'Yeni Mesaj: deneme hakkında', 5, '<p>kes sikerim belanı</p>...', '/ticket/29', 0, '2024-12-07 23:53:58'),
+(18, 'Yeni Mesaj: deneme hakkında', 4, '<p>tamams</p>...', '/ticket/29', 0, '2024-12-08 00:00:09'),
+(19, 'Yeni Mesaj: deneme hakkında', 5, '<p>tamams</p>...', '/ticket/29', 0, '2024-12-08 00:00:09'),
+(20, 'Yeni Mesaj: deneme hakkında', 2, '<p>sikerim belanı yapma</p>...', '/ticket/29', 0, '2024-12-08 00:00:26'),
+(21, 'Yeni Mesaj: deneme hakkında', 4, '<p>merhaba bir problem varda</p>...', '/ticket/29', 0, '2024-12-08 00:01:50'),
+(22, 'Yeni Mesaj: deneme hakkında', 5, '<p>merhaba bir problem varda</p>...', '/ticket/29', 0, '2024-12-08 00:01:50');
 
 -- --------------------------------------------------------
 
@@ -167,8 +216,8 @@ CREATE TABLE `ogretim_elemanlari` (
 
 INSERT INTO `ogretim_elemanlari` (`ogretim_elemani_id`, `unvan`, `telefon`, `email`, `bölüm_id`, `user_id`) VALUES
 (1, 'Öğr. Gör. Veyis Şen', '05331234567', 'veyis.sen@istanbularel.edu.tr', 1, NULL),
-(2, 'Öğr. Gör. Ebru İdman', '05339876543', 'ebru.idman@istanbularel.edu.tr', 1, 4),
-(9, 'Öğr. Gör. Sibel Birtane Akar', '05345678901', 'sibel.akar@istanbularel.edu.tr', 1, NULL),
+(2, 'Öğr. Gör. Ebru İdman', '5413', 'ebru.idman@istanbularel.edu.tr', 1, 4),
+(9, 'Öğr. Gör. Sibel Birtane Akar', '9812', 'sibel.akar@istanbularel.edu.tr', 1, 5),
 (10, 'Öğr. Gör. Aslıhan Karataş', '05346789012', 'aslihan.karatas@istanbularel.edu.tr', 1, NULL);
 
 -- --------------------------------------------------------
@@ -193,10 +242,14 @@ CREATE TABLE `opened_rollcall` (
 --
 
 INSERT INTO `opened_rollcall` (`roll_call_id`, `ders_id`, `users_id`, `tarih`, `durum`, `baslangic_saati`, `bitis_saati`, `qr_kod_id`) VALUES
-(36, 1, 4, '2024-11-16', 'acik', '18:49:00', '19:30:00', 1),
-(38, 14, 4, '2024-11-16', 'acik', '18:32:00', '00:00:19', 1),
-(40, 14, 4, '2024-11-16', 'acik', '18:50:00', '19:30:00', 2),
-(41, 14, 4, '2024-11-19', 'acik', '21:19:00', '23:00:00', 2);
+(69, 14, 4, '2024-12-03', 'acik', '20:00:00', '20:20:00', 2),
+(70, 14, 4, '2024-12-03', 'acik', '20:21:00', '20:50:00', 2),
+(71, 14, 4, '2024-12-03', 'acik', '20:55:00', '22:00:00', 2),
+(72, 11, 5, '2024-12-03', 'acik', '22:20:00', '23:00:00', 3),
+(73, 14, 4, '2024-12-05', 'acik', '20:00:00', '20:20:00', 2),
+(74, 14, 4, '2024-12-05', 'acik', '20:21:00', '20:50:00', 2),
+(75, 14, 4, '2024-12-05', 'acik', '20:55:00', '22:00:00', 2),
+(76, 11, 5, '2024-12-06', 'acik', '23:25:00', '23:50:00', 3);
 
 -- --------------------------------------------------------
 
@@ -242,9 +295,10 @@ CREATE TABLE `student_courses` (
 --
 
 INSERT INTO `student_courses` (`student_courses_id`, `id`, `gün`, `başlangıç_saati`, `bitiş_saati`, `ders_id`, `derslik_id`) VALUES
-(16, 2, 'Saturday', '16:00:00', '16:50:00', 1, 1),
-(21, 2, 'Saturday', '17:00:00', '17:50:00', 1, 1),
-(22, 2, 'Tuesday', '21:00:00', '23:00:00', 14, 1);
+(22, 2, 'Tuesday', '20:00:00', '20:20:00', 14, 1),
+(23, 2, 'Tuesday', '20:21:00', '20:50:00', 14, 1),
+(25, 2, 'Tuesday', '20:55:00', '22:00:00', 14, 2),
+(26, 2, 'Friday', '23:25:00', '23:50:00', 11, 3);
 
 -- --------------------------------------------------------
 
@@ -258,17 +312,16 @@ CREATE TABLE `tickets` (
   `subject` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
-  `status` enum('Yanıt Bekliyor','Cevaplandı') DEFAULT 'Yanıt Bekliyor'
+  `status` enum('Yanıt Bekliyor','Cevaplandı') DEFAULT 'Yanıt Bekliyor',
+  `categoryId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `tickets`
 --
 
-INSERT INTO `tickets` (`id`, `userId`, `subject`, `description`, `created_at`, `status`) VALUES
-(22, '2', 'merhaba hocam', 'merhabalarrrrrr', '2024-11-16 14:49:23', 'Cevaplandı'),
-(23, '2', 'dd', 'dd', '2024-11-16 17:46:59', 'Cevaplandı'),
-(24, '2', 'aa', 'aa', '2024-11-16 17:49:54', 'Cevaplandı');
+INSERT INTO `tickets` (`id`, `userId`, `subject`, `description`, `created_at`, `status`, `categoryId`) VALUES
+(29, '2', 'deneme hakkında', 'dasdsadas', '2024-12-06 22:43:51', 'Yanıt Bekliyor', 11);
 
 -- --------------------------------------------------------
 
@@ -294,8 +347,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `password`, `studentNumber`, `name`, `surname`, `role`, `photo`, `bolum_id`) VALUES
 (2, 'ege', '$2a$10$Q.neNjq1HjmO5gA9cyS2T.HTyySJ6tp8pbCUiidyqZH.aKnleoqia', '231030015', 'Ahmet Ege', 'Sandal', 'student', 'user_231030015.jpg', 1),
-(4, 'efe', '$2a$10$OE8tFQR8EDV6.lP8kr62F.3khuzzeoHxycAFefWQSM3HJhyIXDzGG', '19103001', 'Ebru', 'İdman', 'admin', 'user_19103001.png', NULL),
-(5, 'asa', '$2a$10$Rgo6BY6IMqZNRpbJy3ErW.7caFrBWFkpgNjQKmGqXSuGr0VGXiKBq', '231030019', 'Mehmet', 'Talha Çelik', 'student', 'user_231030019.png', NULL);
+(4, 'efe', '$2a$10$OE8tFQR8EDV6.lP8kr62F.3khuzzeoHxycAFefWQSM3HJhyIXDzGG', '191030001', 'Ebru', 'İdman', 'admin', 'user_191030001.jpg', 1),
+(5, 'asa', '$2a$10$Rgo6BY6IMqZNRpbJy3ErW.7caFrBWFkpgNjQKmGqXSuGr0VGXiKBq', '191030002', 'Sibel', 'Birtane Akar', 'admin', 'user_191030002.jpg', 1);
 
 -- --------------------------------------------------------
 
@@ -308,17 +361,19 @@ CREATE TABLE `yoklamalar` (
   `user_id` int(11) DEFAULT NULL,
   `ders_id` int(11) DEFAULT NULL,
   `tarih` date DEFAULT NULL,
-  `durum` varchar(50) DEFAULT NULL
+  `durum` varchar(50) DEFAULT NULL,
+  `baslangic_saati` time DEFAULT NULL,
+  `bitis_saati` time DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Tablo döküm verisi `yoklamalar`
 --
 
-INSERT INTO `yoklamalar` (`yoklama_id`, `user_id`, `ders_id`, `tarih`, `durum`) VALUES
-(89, 2, 1, '2024-11-16', 'var'),
-(90, 2, 14, '2024-11-16', 'var'),
-(91, 2, 14, '2024-11-19', 'var');
+INSERT INTO `yoklamalar` (`yoklama_id`, `user_id`, `ders_id`, `tarih`, `durum`, `baslangic_saati`, `bitis_saati`) VALUES
+(97, 2, 14, '2024-12-03', 'var', '20:55:00', '22:00:00'),
+(98, 2, 11, '2024-12-03', 'var', '22:20:00', '23:00:00'),
+(99, 2, 11, '2024-12-06', 'var', '23:25:00', '23:50:00');
 
 --
 -- Dökümü yapılmış tablolar için indeksler
@@ -335,6 +390,12 @@ ALTER TABLE `bolumler`
 --
 ALTER TABLE `campus`
   ADD PRIMARY KEY (`campus_id`);
+
+--
+-- Tablo için indeksler `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Tablo için indeksler `dersler`
@@ -359,6 +420,12 @@ ALTER TABLE `messages`
   ADD KEY `ticketId` (`ticketId`);
 
 --
+-- Tablo için indeksler `notifications`
+--
+ALTER TABLE `notifications`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Tablo için indeksler `ogretim_elemanlari`
 --
 ALTER TABLE `ogretim_elemanlari`
@@ -371,7 +438,7 @@ ALTER TABLE `ogretim_elemanlari`
 --
 ALTER TABLE `opened_rollcall`
   ADD PRIMARY KEY (`roll_call_id`),
-  ADD UNIQUE KEY `unique_rollcall` (`ders_id`,`tarih`,`qr_kod_id`),
+  ADD UNIQUE KEY `unique_rollcall` (`ders_id`,`tarih`,`qr_kod_id`,`baslangic_saati`,`bitis_saati`),
   ADD KEY `users_id` (`users_id`);
 
 --
@@ -395,7 +462,8 @@ ALTER TABLE `student_courses`
 --
 ALTER TABLE `tickets`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `userId` (`userId`);
+  ADD KEY `userId` (`userId`),
+  ADD KEY `categoryId` (`categoryId`);
 
 --
 -- Tablo için indeksler `users`
@@ -410,7 +478,7 @@ ALTER TABLE `users`
 --
 ALTER TABLE `yoklamalar`
   ADD PRIMARY KEY (`yoklama_id`),
-  ADD UNIQUE KEY `unique_attendance` (`user_id`,`ders_id`,`tarih`),
+  ADD UNIQUE KEY `unique_attendance` (`user_id`,`ders_id`,`tarih`,`baslangic_saati`,`bitis_saati`),
   ADD KEY `ders_id` (`ders_id`);
 
 --
@@ -430,6 +498,12 @@ ALTER TABLE `campus`
   MODIFY `campus_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- Tablo için AUTO_INCREMENT değeri `categories`
+--
+ALTER TABLE `categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
 -- Tablo için AUTO_INCREMENT değeri `dersler`
 --
 ALTER TABLE `dersler`
@@ -445,7 +519,13 @@ ALTER TABLE `derslikler`
 -- Tablo için AUTO_INCREMENT değeri `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
+
+--
+-- Tablo için AUTO_INCREMENT değeri `notifications`
+--
+ALTER TABLE `notifications`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- Tablo için AUTO_INCREMENT değeri `ogretim_elemanlari`
@@ -457,7 +537,7 @@ ALTER TABLE `ogretim_elemanlari`
 -- Tablo için AUTO_INCREMENT değeri `opened_rollcall`
 --
 ALTER TABLE `opened_rollcall`
-  MODIFY `roll_call_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `roll_call_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
 
 --
 -- Tablo için AUTO_INCREMENT değeri `qr_kodlar`
@@ -469,13 +549,13 @@ ALTER TABLE `qr_kodlar`
 -- Tablo için AUTO_INCREMENT değeri `student_courses`
 --
 ALTER TABLE `student_courses`
-  MODIFY `student_courses_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `student_courses_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- Tablo için AUTO_INCREMENT değeri `tickets`
 --
 ALTER TABLE `tickets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- Tablo için AUTO_INCREMENT değeri `users`
@@ -487,7 +567,7 @@ ALTER TABLE `users`
 -- Tablo için AUTO_INCREMENT değeri `yoklamalar`
 --
 ALTER TABLE `yoklamalar`
-  MODIFY `yoklama_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
+  MODIFY `yoklama_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
 -- Dökümü yapılmış tablolar için kısıtlamalar
@@ -539,6 +619,12 @@ ALTER TABLE `student_courses`
   ADD CONSTRAINT `student_courses_ibfk_1` FOREIGN KEY (`id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `student_courses_ibfk_2` FOREIGN KEY (`ders_id`) REFERENCES `dersler` (`ders_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `student_courses_ibfk_3` FOREIGN KEY (`derslik_id`) REFERENCES `derslikler` (`derslik_id`) ON DELETE CASCADE;
+
+--
+-- Tablo kısıtlamaları `tickets`
+--
+ALTER TABLE `tickets`
+  ADD CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`categoryId`) REFERENCES `categories` (`id`);
 
 --
 -- Tablo kısıtlamaları `users`
