@@ -43,12 +43,6 @@ function Header() {
     const renderDropdownMenu = () => (
         <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
             <li>
-                <Link className="dropdown-item" href="/profil">Profil Ayarları</Link>
-            </li>
-            <li>
-                <Link className="dropdown-item" href="/notifications">Bildirimler</Link>
-            </li>
-            <li>
                 <Link className="dropdown-item" href="/preferences">Tercihler</Link>
             </li>
             <li>
