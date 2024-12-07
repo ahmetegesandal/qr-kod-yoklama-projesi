@@ -28,6 +28,7 @@ Kullanıcı Adı: efe
   - Anket Sistemi
 - **Furkan**:
   - Sistem için Dark Mod geliştirmesi
+  - Genel tasarım ve estetik hatalarının giderilmesi css
 
 ### Veritabanı ve Dil Desteği:
 - **Hatice**:
