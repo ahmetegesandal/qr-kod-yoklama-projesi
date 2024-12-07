@@ -32,7 +32,7 @@ Kullanıcı Adı: efe
 ### Veritabanı ve Dil Desteği:
 - **Hatice**:
   - SQL veritabanına kayıt girişi
-  - Dil desteği dosyası hazırlığı
+  - Dil desteği dosyası geliştirilmesi
   - Genel fikir üretimi
 - **Sena**:
   - SQL veritabanı yapısının kontrolü
