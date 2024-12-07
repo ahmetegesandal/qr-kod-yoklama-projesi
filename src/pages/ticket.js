@@ -107,7 +107,7 @@ function Ticket() {
                                 </td>
                                 <td>{new Date(ticket.created_at).toLocaleString()}</td>
                                 <td className="text-center">
-                                    <Link href={`/ticket/${ticket.id}`} className="btn btn-primary">
+                                    <Link href={`/ticket/${ticket.id}`} className="btn btn-sm btn-primary">
                                         <FontAwesomeIcon icon={faEye} style={{color: 'white'}}/>
                                     </Link>
                                 </td>

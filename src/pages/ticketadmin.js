@@ -173,11 +173,11 @@ function TicketAdmin() {
                                 </td>
                                 <td>{new Date(ticket.created_at).toLocaleString()}</td>
                                 <td className="text-center">
-                                    <Link href={`/ticket/${ticket.id}`} className="btn btn-primary me-2">
+                                    <Link href={`/ticket/${ticket.id}`} className="btn btn-sm btn-primary me-2">
                                         <FontAwesomeIcon icon={faEye} style={{color: 'white'}}/>
                                     </Link>
                                     <button
-                                        className="btn btn-danger"
+                                        className="btn btn-sm btn-danger"
                                         onClick={() => deleteTicket(ticket.id)}
                                     >
                                         <FontAwesomeIcon icon={faTrash}/>

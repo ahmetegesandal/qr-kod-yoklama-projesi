@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 
 export default async function handler(req, res) {
     if (req.method === 'POST') {
+        // Mevcut POST işlemleri
         const { ticketId, message } = req.body;
         const token = req.headers.authorization?.split(' ')[1];
 
@@ -91,8 +92,8 @@ export default async function handler(req, res) {
                 for (const admin of admins) {
                     await connection.query(
                         `
-                        INSERT INTO notifications (userId, title, message, link, is_read, created_at)
-                        VALUES (?, ?, ?, ?, false, NOW())
+                            INSERT INTO notifications (userId, title, message, link, is_read, created_at)
+                            VALUES (?, ?, ?, ?, false, NOW())
                         `,
                         [admin.id, notificationTitle, notificationMessage, notificationLink]
                     );
@@ -103,8 +104,8 @@ export default async function handler(req, res) {
             if (notificationUserId) {
                 await connection.query(
                     `
-                    INSERT INTO notifications (userId, title, message, link, is_read, created_at)
-                    VALUES (?, ?, ?, ?, false, NOW())
+                        INSERT INTO notifications (userId, title, message, link, is_read, created_at)
+                        VALUES (?, ?, ?, ?, false, NOW())
                     `,
                     [notificationUserId, notificationTitle, notificationMessage, notificationLink]
                 );
@@ -138,8 +139,54 @@ export default async function handler(req, res) {
                 connection.end();
             }
         }
+    } else if (req.method === 'DELETE') {
+        // Yeni eklenen DELETE işlemleri
+        const { id } = req.query; // Silinecek mesajın ID'si
+        const token = req.headers.authorization?.split(' ')[1];
+
+        if (!token) {
+            return res.status(401).json({ message: 'Authorization token required' });
+        }
+
+        let connection;
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const userId = decoded.userId;
+
+            connection = await getConnection();
+
+            // Kullanıcının admin olup olmadığını kontrol et
+            const [user] = await connection.query(
+                'SELECT role FROM users WHERE id = ?',
+                [userId]
+            );
+
+            if (!user || user[0].role !== 'admin') {
+                return res.status(403).json({ message: 'Only admins can delete messages.' });
+            }
+
+            // Mesajı veritabanından sil
+            const [deleteResult] = await connection.query(
+                'DELETE FROM messages WHERE id = ?',
+                [id]
+            );
+
+            if (deleteResult.affectedRows === 0) {
+                return res.status(404).json({ message: 'Message not found or already deleted.' });
+            }
+
+            console.log(`Message ID: ${id} deleted by Admin ID: ${userId}`);
+            res.status(200).json({ message: 'Message deleted successfully.' });
+        } catch (error) {
+            console.error('Error in DELETE /api/messages:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        } finally {
+            if (connection) {
+                connection.end();
+            }
+        }
     } else {
-        res.setHeader('Allow', ['POST']);
+        res.setHeader('Allow', ['POST', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);
     }
 }

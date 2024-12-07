@@ -8,6 +8,8 @@ import dynamic from 'next/dynamic';
 import DOMPurify from 'dompurify';
 import Link from 'next/link';
 import {UserContext} from "@/contexts/UserContext";
+import {faTrash} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 
 const DynamicCKEditor = dynamic(() => import('@/components/CustomEditor'), {
@@ -52,6 +54,18 @@ function TicketDetail() {
     }, [id]);
 
     const handleSendMessage = () => {
+        if (!messageText || messageText.trim() === '') {
+            // CKEditor'den gelen mesaj boş veya sadece boşluklardan oluşuyorsa
+            Swal.fire({
+                icon: 'warning',
+                title: 'Uyarı',
+                text: 'Mesaj içeriği boş olamaz.',
+                timer: 2000,
+                showConfirmButton: false,
+            });
+            return;
+        }
+
         const token = localStorage.getItem('token');
         console.log('Sending message:', { ticketId: id, message: messageText }); // Gönderilecek mesaj logu
 
@@ -113,6 +127,47 @@ function TicketDetail() {
             });
     };
 
+    const handleDeleteMessage = (messageId) => {
+        const token = localStorage.getItem('token');
+
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: 'Bu mesajı silmek istediğinize emin misiniz?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Evet, sil!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/api/messages?id=${messageId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error('Mesaj silinemedi');
+                        }
+                        return response.json();
+                    })
+                    .then(() => {
+                        setMessages((prevMessages) =>
+                            prevMessages.filter((msg) => msg.id !== messageId)
+                        );
+
+                        Swal.fire('Silindi!', 'Mesaj başarıyla silindi.', 'success');
+                    })
+                    .catch((error) => {
+                        console.error('Error deleting message:', error);
+                        Swal.fire('Hata', error.message, 'error');
+                    });
+            }
+        });
+    };
+
+
     if (!ticket) {
         return (
             <div className="container mt-4">
@@ -146,14 +201,14 @@ function TicketDetail() {
 
                         <div className="d-flex column-gap-2 justify-content-end">
                             <Link href={userData.role === 'admin' ? '/ticketadmin' : '/ticket'} passHref>
-                                <button className="btn btn-warning mb-4">
+                                <button className="btn btn-sm btn-warning mb-4">
                                     Geri Dön
                                 </button>
                             </Link>
 
                             <button
                                 onClick={() => setShowMessageInput(!showMessageInput)}
-                                className="btn btn-primary mb-4"
+                                className="btn btn-sm btn-primary mb-4"
                             >
                                 Yanıtla
                             </button>
@@ -177,7 +232,7 @@ function TicketDetail() {
                                     }}
                                 />
                                 <div className="d-flex justify-content-end">
-                                    <button onClick={handleSendMessage} className="btn btn-primary mt-3">
+                                    <button onClick={handleSendMessage} className="btn btn-sm btn-primary mt-3">
                                         Mesajı Gönder
                                     </button>
                                 </div>
@@ -197,6 +252,17 @@ function TicketDetail() {
                                     <small
                                         className="text-muted">Gönderildi: {new Date(msg.created_at).toLocaleString()}</small>
                                 </p>
+                                {userData.role === 'admin' && (
+                                    <div className="d-flex column-gap-2 justify-content-end">
+                                        <button
+                                            onClick={() => handleDeleteMessage(msg.id)}
+                                            className="btn btn-sm btn-danger"
+                                        >
+                                            <FontAwesomeIcon icon={faTrash}/>
+                                        </button>
+                                    </div>
+
+                                )}
                             </div>
                         </div>
                     ))}
