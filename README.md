@@ -68,6 +68,8 @@ https://www.apachefriends.org/tr/download.html
 apache ve mysql startla mysql in karşısındaki admine bas açılan yerden sol üstte yeni de veritabanı adı yazan yere my_auth_db
 yaz ve oluştur ardından sol üstte çıkan my_auth_db ye tıkla sonra ortadaki menülerden içe aktar de githubdaki db dosyasını seç ve onayla db kuruldu
 
+BU PROGRAM HER BİLGİSAYAR AÇILDIĞINDA AÇILMASI GEREK VE START TUŞLARINA BASILMASI GEREK
+
 
 
 
