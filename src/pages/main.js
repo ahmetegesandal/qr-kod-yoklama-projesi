@@ -51,11 +51,11 @@ function Main() {
                                         objectFit: 'cover',
                                     }}
                                 />
-                                <h6 className="card-title mt-3">Mehmet Talha Çelik</h6>
+                                <h6 className="card-title mt-3">das</h6>
                                 <p className="card-text small">Öğrenci Danışmanı</p>
                                 <p className="card-text small">Dahili: 4170</p>
-                                <p className="card-text small">Yerleşke: Kemal Gözükara Yerleşkesi</p>
-                                <p className="card-text small">mehmettalhacelik@arel.edu.tr</p>
+                                <p className="card-text small">Yerleşke: aa a Yerleşkesi</p>
+                                <p className="card-text small">aa@aa.edu.tr</p>
                                 <a href="#" className="btn btn-outline-primary btn-sm d-block mt-3">
                                     Mesaj Gönder
                                 </a>

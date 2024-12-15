@@ -90,7 +90,7 @@ export default function Login() {
                     <div className="text-center mb-3">
                         <img src="/images/logo.png" alt="Logo" style={{height: '135px'}} className="mb-3"/>
                         <h1 style={{color: 'var(--bs-primary)', margin: '0', fontWeight: '700'}}>
-                            AREL<span style={{color: '#ab8e58'}}>im</span>
+                            SYSTT<span style={{color: '#ab8e58'}}>em</span>
                         </h1>
                     </div>
                     <form onSubmit={handleLogin}>

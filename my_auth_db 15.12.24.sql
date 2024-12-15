@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Anamakine: 127.0.0.1
--- Üretim Zamanı: 07 Ara 2024, 22:13:44
+-- Üretim Zamanı: 15 Ara 2024, 12:27:22
 -- Sunucu sürümü: 10.4.28-MariaDB
 -- PHP Sürümü: 8.0.28
 
@@ -157,13 +157,6 @@ CREATE TABLE `messages` (
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tablo döküm verisi `messages`
---
-
-INSERT INTO `messages` (`id`, `ticketId`, `userId`, `content`, `created_at`) VALUES
-(124, 29, '2', '<p>merhaba bir problem varda</p>', '2024-12-08 00:01:50');
-
 -- --------------------------------------------------------
 
 --
@@ -179,21 +172,6 @@ CREATE TABLE `notifications` (
   `is_read` tinyint(1) DEFAULT 0,
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Tablo döküm verisi `notifications`
---
-
-INSERT INTO `notifications` (`id`, `title`, `userId`, `message`, `link`, `is_read`, `created_at`) VALUES
-(14, 'Yeni Mesaj: deneme hakkında', 2, '<p>atma artık buradan bilet</p>...', '/ticket/29', 0, '2024-12-07 23:47:34'),
-(15, 'Yeni Mesaj: deneme hakkında', 2, '<p>atmaa</p>...', '/ticket/29', 0, '2024-12-07 23:48:07'),
-(16, 'Yeni Mesaj: deneme hakkında', 4, '<p>kes sikerim belanı</p>...', '/ticket/29', 0, '2024-12-07 23:53:58'),
-(17, 'Yeni Mesaj: deneme hakkında', 5, '<p>kes sikerim belanı</p>...', '/ticket/29', 0, '2024-12-07 23:53:58'),
-(18, 'Yeni Mesaj: deneme hakkında', 4, '<p>tamams</p>...', '/ticket/29', 0, '2024-12-08 00:00:09'),
-(19, 'Yeni Mesaj: deneme hakkında', 5, '<p>tamams</p>...', '/ticket/29', 0, '2024-12-08 00:00:09'),
-(20, 'Yeni Mesaj: deneme hakkında', 2, '<p>sikerim belanı yapma</p>...', '/ticket/29', 0, '2024-12-08 00:00:26'),
-(21, 'Yeni Mesaj: deneme hakkında', 4, '<p>merhaba bir problem varda</p>...', '/ticket/29', 0, '2024-12-08 00:01:50'),
-(22, 'Yeni Mesaj: deneme hakkında', 5, '<p>merhaba bir problem varda</p>...', '/ticket/29', 0, '2024-12-08 00:01:50');
 
 -- --------------------------------------------------------
 
@@ -215,10 +193,10 @@ CREATE TABLE `ogretim_elemanlari` (
 --
 
 INSERT INTO `ogretim_elemanlari` (`ogretim_elemani_id`, `unvan`, `telefon`, `email`, `bölüm_id`, `user_id`) VALUES
-(1, 'Öğr. Gör. Veyis Şen', '05331234567', 'veyis.sen@istanbularel.edu.tr', 1, NULL),
-(2, 'Öğr. Gör. Ebru İdman', '5413', 'ebru.idman@istanbularel.edu.tr', 1, 4),
-(9, 'Öğr. Gör. Sibel Birtane Akar', '9812', 'sibel.akar@istanbularel.edu.tr', 1, 5),
-(10, 'Öğr. Gör. Aslıhan Karataş', '05346789012', 'aslihan.karatas@istanbularel.edu.tr', 1, NULL);
+(1, 'Öğr. dd', '883', 'bb@hotmail.com', 1, NULL),
+(2, 'Öğr. Gör. bb', '5413', 'a@hotmail.com', 1, 4),
+(9, 'Öğr. Gör. pp', '9812', 'dd@hotmail.com', 1, 5),
+(10, 'Öğr. Gör. aa', '232', 'cc@hotmail.com', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -316,13 +294,6 @@ CREATE TABLE `tickets` (
   `categoryId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Tablo döküm verisi `tickets`
---
-
-INSERT INTO `tickets` (`id`, `userId`, `subject`, `description`, `created_at`, `status`, `categoryId`) VALUES
-(29, '2', 'deneme hakkında', 'dasdsadas', '2024-12-06 22:43:51', 'Yanıt Bekliyor', 11);
-
 -- --------------------------------------------------------
 
 --
@@ -347,8 +318,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `password`, `studentNumber`, `name`, `surname`, `role`, `photo`, `bolum_id`) VALUES
 (2, 'ege', '$2a$10$Q.neNjq1HjmO5gA9cyS2T.HTyySJ6tp8pbCUiidyqZH.aKnleoqia', '231030015', 'Ahmet Ege', 'Sandal', 'student', 'user_231030015.jpg', 1),
-(4, 'efe', '$2a$10$OE8tFQR8EDV6.lP8kr62F.3khuzzeoHxycAFefWQSM3HJhyIXDzGG', '191030001', 'Ebru', 'İdman', 'admin', 'user_191030001.jpg', 1),
-(5, 'asa', '$2a$10$Rgo6BY6IMqZNRpbJy3ErW.7caFrBWFkpgNjQKmGqXSuGr0VGXiKBq', '191030002', 'Sibel', 'Birtane Akar', 'admin', 'user_191030002.jpg', 1);
+(4, 'efe', '$2a$10$OE8tFQR8EDV6.lP8kr62F.3khuzzeoHxycAFefWQSM3HJhyIXDzGG', '191030001', 'aa', 'bb', 'admin', 'user_191030001.jpg', 1),
+(5, 'asa', '$2a$10$Rgo6BY6IMqZNRpbJy3ErW.7caFrBWFkpgNjQKmGqXSuGr0VGXiKBq', '191030002', 'cc', 'dd', 'admin', 'user_191030002.jpg', 1);
 
 -- --------------------------------------------------------
 
@@ -519,13 +490,13 @@ ALTER TABLE `derslikler`
 -- Tablo için AUTO_INCREMENT değeri `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=127;
 
 --
 -- Tablo için AUTO_INCREMENT değeri `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- Tablo için AUTO_INCREMENT değeri `ogretim_elemanlari`

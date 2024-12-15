@@ -172,7 +172,7 @@ function Header() {
                 <Link href="/main" className="navbar-brand d-flex align-items-center">
                     <img src="/images/logo.png" alt="Logo" style={{height: '40px'}} className="me-2"/>
                     <h2 style={{color: 'var(--bs-primary)', margin: '0', fontWeight: '700'}}>
-                        AREL<span style={{color: '#ab8e58'}}>im</span>
+                        SYSST<span style={{color: '#ab8e58'}}>em</span>
                     </h2>
                 </Link>
 
@@ -226,10 +226,10 @@ function Header() {
                                         { href: '/qrstart', label: 'QR Başlat' }
                                     ] : []),
                                 ]},
-                            { href: '/arel-yasam', label: 'Arel Yaşam', color: '#E9C46A', dropdown: [
-                                    { href: '/arel-yasam/etkinlikler', label: 'Etkinlikler' },
-                                    { href: '/arel-yasam/duyurular', label: 'Duyurular' },
-                                    { href: '/arel-yasam/katilimci', label: 'Katılımcı Ol' },
+                            { href: '/aa-yasam', label: 'aa Yaşam', color: '#E9C46A', dropdown: [
+                                    { href: '/aa-yasam/etkinlikler', label: 'Etkinlikler' },
+                                    { href: '/aa-yasam/duyurular', label: 'Duyurular' },
+                                    { href: '/aa-yasam/katilimci', label: 'Katılımcı Ol' },
                                 ]},
                             { href: '/basvurular', label: 'Başvurular', color: '#f76707', dropdown: [
                                     { href: '/basvurular/staj', label: 'Staj Başvurusu' },
